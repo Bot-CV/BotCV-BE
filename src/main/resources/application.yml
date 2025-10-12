@@ -47,7 +47,7 @@ spring:
             enable: true
   jackson:
     time-zone: Asia/Ho_Chi_Minh
-#  profiles:
-#    default: dev
+  profiles:
+    default: dev
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:3000}
