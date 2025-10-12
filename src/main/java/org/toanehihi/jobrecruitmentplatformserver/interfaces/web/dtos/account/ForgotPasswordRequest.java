@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public class ForgotPasswordRequest {
-    @NotBlank(message = "AUTH_EMAIL_BLANK")
-    @Email(message = "AUTH_INVALID_EMAIL")
+    @NotBlank(message = "EMAIL_BLANK")
+    @Email(message = "INVALID_EMAIL")
     private String email;
 }

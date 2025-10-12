@@ -12,6 +12,14 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTED(1001, "Email already existed", HttpStatus.BAD_REQUEST),
     INVALID_CREDENTIALS(1002, "Username or password is not correct", HttpStatus.BAD_REQUEST),
     PASSWORD_SAME_AS_OLD(1003, "New password is as same as old", HttpStatus.FORBIDDEN),
+    FULLNAME_BLANK(1004, "Fullname must not be blanked", HttpStatus.FORBIDDEN),
+    EMAIL_BLANK(1005, "Email must not be blanked", HttpStatus.FORBIDDEN),
+    INVALID_PASSWORD(1006, "You password must be at least 8 characters", HttpStatus.FORBIDDEN),
+    INVALID_EMAIL(1007, "Your email must comply with email rules", HttpStatus.FORBIDDEN),
+    COMPANY_NAME_BLANK(1008, "Company name must not be blank", HttpStatus.FORBIDDEN),
+    ID_TOKEN_BLANK(1009, "ID token is required", HttpStatus.FORBIDDEN),
+    REFRESH_TOKEN_REQUIRED(1010, "Refresh token is required", HttpStatus.FORBIDDEN),
+    LEVEL_INVALID(1011, "Level must be in range 0 - 5", HttpStatus.BAD_REQUEST),
 
     // Auth (1101 - 1200)
     AUTH_UNAUTHENTICATED(1101, "Unauthenticated", HttpStatus.FORBIDDEN),
@@ -69,6 +77,9 @@ public enum ErrorCode {
     // Data errors(9801 - 9900)
     ENUM_INVALID_VALUE(9801, "Invalid enum value", HttpStatus.BAD_REQUEST),
     INVALID_REQUEST_DATA(9802, "Invalid request data", HttpStatus.BAD_REQUEST),
+    FILE_EMPTY(9803, "Input file must not empty", HttpStatus.FORBIDDEN),
+    FILE_TYPE_NOT_SUPPORTED(9804, "File type is not supported", HttpStatus.UNSUPPORTED_MEDIA_TYPE),
+    FILE_UPLOAD_FAILED(9805, "Fail to upload file", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // System errors (9901 - 9999)
     SYSTEM_UNKNOWN_ERROR(9998, "System unknow error", HttpStatus.INTERNAL_SERVER_ERROR),

@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.toanehihi.jobrecruitmentplatformserver.application.token.service.JwtService;
 import org.toanehihi.jobrecruitmentplatformserver.application.token.service.TokenService;
@@ -52,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final TokenService tokenService;
     private final GoogleOAuthService googleOAuthService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
@@ -59,12 +61,22 @@ public class AuthServiceImpl implements AuthService {
         Role role = roleRepository.findByName("CANDIDATE")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
-        if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTED);
+        Optional<Account> existingAccount = accountRepository.findByEmail(request.getEmail());
+        if (existingAccount.isPresent()) {
+            Account account = existingAccount.get();
+            if (account.getPassword() != null) {
+                throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTED);
+            } else {
+                account.setPassword(passwordEncoder.encode(request.getPassword()));
+                account.setProvider(AuthProvider.LOCAL);
+                Account savedAccount = accountRepository.save(account);
+                return accountMapper.toResponse(savedAccount);
+            }
         }
 
         Account account = accountMapper.toCandidateAccount(request);
         account.setRole(role);
+        account.setProvider(AuthProvider.LOCAL);
         Account savedAccount = accountRepository.save(account);
 
         Candidate candidate = Candidate.builder()
@@ -109,6 +121,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthenticationResponse login(LoginRequest request) {
+        Account existedAccount = accountRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_CREDENTIALS));
+        if (existedAccount.getPassword() == null) {
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
         try {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -142,13 +159,6 @@ public class AuthServiceImpl implements AuthService {
 
             if (account.getStatus() == AccountStatus.SUSPENDED) {
                 throw new AppException(ErrorCode.AUTH_ACCOUNT_SUSPENDED);
-            }
-
-            if (account.getProvider() == AuthProvider.LOCAL) {
-                account.setProvider(AuthProvider.GOOGLE);
-                account.setVerifiedAt(OffsetDateTime.now());
-                account = accountRepository.save(account);
-                log.info("Updated account provider from LOCAL to GOOGLE: {}", account.getEmail());
             }
         } else {
             Role role = roleRepository.findByName("CANDIDATE")
