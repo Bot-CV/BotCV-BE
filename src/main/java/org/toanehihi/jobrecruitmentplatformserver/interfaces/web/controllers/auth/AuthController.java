@@ -17,10 +17,12 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.auth.Refre
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class AuthController {
     private final AuthService authService;
 
