@@ -66,12 +66,22 @@ public class AuthServiceImpl implements AuthService {
             Account account = existingAccount.get();
             if (account.getPassword() != null) {
                 throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTED);
-            } else {
-                account.setPassword(passwordEncoder.encode(request.getPassword()));
-                account.setProvider(AuthProvider.LOCAL);
-                Account savedAccount = accountRepository.save(account);
-                return accountMapper.toResponse(savedAccount);
             }
+
+            account.setPassword(passwordEncoder.encode(request.getPassword()));
+            account.setProvider(AuthProvider.LOCAL);
+
+            Candidate candidate = candidateRepository.findByAccountId(account.getId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_CANDIDATE_NOT_FOUND));
+
+            if (!candidate.getFullName().equals(request.getFullName())) {
+                candidate.setFullName(request.getFullName());
+                candidateRepository.save(candidate);
+            }
+
+            Account savedAccount = accountRepository.save(account);
+            return accountMapper.toResponse(savedAccount);
+
         }
 
         Account account = accountMapper.toCandidateAccount(request);
@@ -92,7 +102,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AccountResponse recruiterRegister(RecruiterAccountRequest request) {
-        log.info("Login service!!!");
         Role role = roleRepository.findByName("RECRUITER")
                 .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND));
 
@@ -102,6 +111,7 @@ public class AuthServiceImpl implements AuthService {
 
         Account account = accountMapper.toRecruiterAccount(request);
         account.setRole(role);
+        account.setProvider(AuthProvider.LOCAL);
         Account savedAccount = accountRepository.save(account);
 
         Company company = Company.builder()
@@ -221,6 +231,10 @@ public class AuthServiceImpl implements AuthService {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
+        if (account.getStatus() == AccountStatus.SUSPENDED) {
+            throw new AppException(ErrorCode.AUTH_ACCOUNT_SUSPENDED);
+        }
+
         String newAccessToken = jwtService.generateAccessToken(account);
 
         return AuthenticationResponse.builder()
@@ -233,15 +247,23 @@ public class AuthServiceImpl implements AuthService {
     public void logout(LogoutRequest request) {
         String refreshToken = request.getRefreshToken();
 
-        if (refreshToken != null && !refreshToken.isEmpty()) {
-            if (!jwtService.isRefreshToken(refreshToken)) {
-                throw new AppException(ErrorCode.JWT_INVALID_TOKEN);
-            }
-
-            jwtService.blacklistToken(refreshToken);
-            log.info("Refresh token blacklisted successfully");
-        } else {
+        if (refreshToken == null || refreshToken.isEmpty()) {
             throw new AppException(ErrorCode.JWT_INVALID_TOKEN);
         }
+
+        if (!jwtService.isRefreshToken(refreshToken)) {
+            throw new AppException(ErrorCode.JWT_INVALID_TOKEN);
+        }
+
+        if (!jwtService.validateToken(refreshToken)) {
+            throw new AppException(ErrorCode.JWT_INVALID_TOKEN);
+        }
+
+        if (tokenService.isBlacklisted(refreshToken)) {
+            log.info("Token already blacklisted");
+            return;
+        }
+
+        jwtService.blacklistToken(refreshToken);
     }
 }
