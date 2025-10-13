@@ -42,6 +42,7 @@ public class JobMapper {
                 .benefits(job.getDescription().getBenefits())
                 .hiringProcess(job.getDescription().getHiringProcess())
                 .notes(job.getDescription().getNotes())
+                .maxCandidates(job.getMaxCandidates() != null ? job.getMaxCandidates() : null)
                 .build();
     }
 
@@ -57,6 +58,7 @@ public class JobMapper {
                 .salaryMin(request.getSalaryMin())
                 .salaryMax(request.getSalaryMax())
                 .currency(request.getCurrency())
+                .maxCandidates(request.getMaxCandidates() != null ? request.getMaxCandidates() : null)
                 .dateExpires(request.getDateExpires())
                 .description(JobDescription.builder()
                         .summary(request.getSummary())

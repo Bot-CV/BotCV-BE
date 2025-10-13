@@ -17,6 +17,7 @@ import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.SeniorityLe
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.WorkMode;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job.JobMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.*;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
@@ -223,16 +224,29 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobResponse cancelJob(Long id) {
+    public JobResponse cancelJob(Account account, Long id) {
+        Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
+                .orElseThrow(()-> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
+
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.JOB_NOT_FOUND));
+        if (!job.getCompany().getId().equals(recruiter.getCompany().getId())) {
+            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
+        }
+        if (job.getStatus() != JobStatus.PUBLISHED && job.getStatus() != JobStatus.PENDING) {
+            throw new AppException(ErrorCode.JOB_CLOSED_CANNOT_UPDATE);
+        }
         job.setStatus(JobStatus.CANCELED);
         return jobMapper.toResponse(jobRepository.save(job));
     }
 
     @Override
-    @HasRecruiterRole
-    public JobResponse moderateJobPosting(Long id, String action) {
+    @HasAdminRole
+    public JobResponse moderateJobPosting(Account account, Long id, String action) {
+        if (!account.getRole().getName().equals("ADMIN")){
+            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
+        }
+
         action = action.toUpperCase();
 
         if (!action.equals("APPROVE") && !action.equals("REJECT")) {

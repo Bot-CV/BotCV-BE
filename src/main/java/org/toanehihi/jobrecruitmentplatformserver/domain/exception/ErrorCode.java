@@ -69,7 +69,7 @@ public enum ErrorCode {
 
     // Database constraint violations(9701 - 9800)
     DATABASE_CONSTRAINT_VIOLATION(9701, "Database constraint violated", HttpStatus.BAD_REQUEST),
-    DATABASE_DUPLICATE_KEY(9702, "Duplicate key value violates unique constraint", HttpStatus.CONFLICT),
+    DATABASE_DUPLICATE_KEY(9702, "This key already exists. Please choose a different one", HttpStatus.CONFLICT),
     DATABASE_FOREIGN_KEY_VIOLATION(9703, "Foreign key constraint violated", HttpStatus.CONFLICT),
     DATABASE_UNIQUE_CONSTRAINT_VIOLATION(9704, "Unique constraint violated", HttpStatus.CONFLICT),
     DATABASE_NOT_NULL_VIOLATION(9705, "Null value violates not-null constraint", HttpStatus.BAD_REQUEST),

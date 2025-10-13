@@ -65,6 +65,9 @@ public class Job {
 	@Column(name = "currency")
 	private String currency;
 
+    @Column(name = "max_candidates")
+    private Integer maxCandidates;
+
 	@OneToOne(mappedBy = "job")
 	private JobDescription description;
 

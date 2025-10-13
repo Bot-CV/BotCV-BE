@@ -9,9 +9,10 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.DataRespon
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.UpdateJobRequest;
 
 @RestController
-@RequestMapping("/api/v1/jobs")
+@RequestMapping("/api/job")
 @AllArgsConstructor
 public class JobController {
     private final JobService jobService;
@@ -29,6 +30,27 @@ public class JobController {
     public DataResponse<JobResponse> createJob(@CurrentUser Account account, @RequestBody CreateJobRequest request) {
         return DataResponse.<JobResponse>builder()
                 .data(jobService.createJob(account, request))
+                .build();
+    }
+
+    @PutMapping("/{jobId}")
+    public DataResponse<JobResponse> updateJob(@CurrentUser Account account, @PathVariable Long jobId, @RequestBody UpdateJobRequest request){
+        return DataResponse.<JobResponse>builder()
+                .data(jobService.updateJob(account, jobId,request))
+                .build();
+    }
+
+    @PatchMapping("/{jobId}")
+    public DataResponse<JobResponse> cancelJob(@CurrentUser Account account, @PathVariable Long jobId){
+        return DataResponse.<JobResponse>builder()
+                .data(jobService.cancelJob(account, jobId))
+                .build();
+    }
+
+    @PatchMapping("/{jobId}/moderate")
+    public DataResponse<JobResponse> moderateJobPosting(@CurrentUser Account account, @PathVariable Long jobId, @RequestParam String action){
+        return DataResponse.<JobResponse>builder()
+                .data(jobService.moderateJobPosting(account, jobId, action))
                 .build();
     }
 

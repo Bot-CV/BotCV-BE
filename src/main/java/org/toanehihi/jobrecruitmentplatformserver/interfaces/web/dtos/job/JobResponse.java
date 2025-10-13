@@ -22,6 +22,7 @@ public class JobResponse {
     private Integer salaryMin;
     private Integer salaryMax;
     private String currency;
+    private Integer maxCandidates;
     private OffsetDateTime datePosted;
     private OffsetDateTime dateExpires;
     private JobStatus status;
@@ -30,7 +31,6 @@ public class JobResponse {
     private String requirements;
     private String niceToHave;
     private String benefits;
-    private String techStack;
     private String hiringProcess;
     private String notes;
 }

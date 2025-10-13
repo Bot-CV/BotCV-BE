@@ -21,6 +21,7 @@ public class CreateJobRequest {
     private Integer salaryMin;
     private Integer salaryMax;
     private String currency;
+    private Integer maxCandidates;
     private OffsetDateTime dateExpires;
     private String summary;
     private String responsibilities;

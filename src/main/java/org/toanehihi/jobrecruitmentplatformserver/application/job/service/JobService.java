@@ -17,9 +17,9 @@ public interface JobService {
 
     JobResponse updateJob(Account account, Long id, UpdateJobRequest request);
 
-    JobResponse cancelJob(Long id);
+    JobResponse cancelJob(Account account, Long id);
 
-    JobResponse moderateJobPosting(Long id, String action);
+    JobResponse moderateJobPosting(Account account, Long id, String action);
 
     void deleteJob(Long id);
 
