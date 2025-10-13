@@ -30,7 +30,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
     @Nullable
     public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
         String email = jwt.getSubject();
-
+        log.info("Converting JWT {} to Authentication Token", email);
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
