@@ -42,7 +42,6 @@ public class AuthController {
 
     @PostMapping("/login")
     public DataResponse<AuthenticationResponse> login(@RequestBody LoginRequest request) {
-        log.info("Login controller!!!");
         return DataResponse.<AuthenticationResponse>builder()
                 .data(authService.login(request))
                 .build();
