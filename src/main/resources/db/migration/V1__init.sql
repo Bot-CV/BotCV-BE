@@ -265,6 +265,7 @@ CREATE TABLE
         salary_min INTEGER,
         salary_max INTEGER,
         currency VARCHAR(10),
+        max_candidates int,
         date_posted TIMESTAMPTZ (3),
         date_expires TIMESTAMPTZ (3),
         status job_status NOT NULL,
