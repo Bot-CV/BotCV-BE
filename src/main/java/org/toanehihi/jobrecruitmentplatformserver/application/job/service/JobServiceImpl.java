@@ -21,6 +21,7 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdmin
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobDetailResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.UpdateJobRequest;
 
@@ -41,13 +42,12 @@ public class JobServiceImpl implements JobService {
     private final JobApplicationRepository jobApplicationRepository;
     private final JobDescriptionRepository jobDescriptionRepository;
 
+
     @Override
-    public JobResponse findJobById(Long id) {
-        return jobMapper
-                .toResponse(
-                        jobRepository.findById(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.JOB_NOT_FOUND))
-                );
+    public JobDetailResponse getJobDetail(Long id) {
+        return jobRepository.findById(id)
+                .map(jobMapper::toJobDetailResponse)
+                .orElseThrow(() -> new AppException(ErrorCode.JOB_NOT_FOUND));
     }
 
     @Override
@@ -62,15 +62,15 @@ public class JobServiceImpl implements JobService {
         return PageResult.from(jobs);
     }
 
-    @Override
-    public PageResult<JobResponse> getPublishJobs(int page, int size, String sortBy, String sortDir){
-        Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-
-        Page<JobResponse> jobs = jobRepository.findJobsByStatus(JobStatus.PUBLISHED, pageable)
-                .map(jobMapper::toResponse);
-        return PageResult.from(jobs);
-    }
+//    @Override
+//    public PageResult<JobResponse> getPublishJobs(int page, int size, String sortBy, String sortDir){
+//        Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+//        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+//
+//        Page<JobResponse> jobs = jobRepository.findJobsByStatus(JobStatus.PUBLISHED, pageable)
+//                .map(jobMapper::toResponse);
+//        return PageResult.from(jobs);
+//    }
 
 
     @Override

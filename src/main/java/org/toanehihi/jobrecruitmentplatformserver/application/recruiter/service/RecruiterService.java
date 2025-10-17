@@ -1,8 +1,12 @@
 package org.toanehihi.jobrecruitmentplatformserver.application.recruiter.service;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.candidate.CandidateResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.recruiter.RecruiterRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.recruiter.RecruiterResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
@@ -15,4 +19,10 @@ public interface RecruiterService {
     CompanyResponse updateCompany(CompanyRequest request);
 
     ResourceResponse updateAvatar(MultipartFile file);
+
+    Page<JobResponse> getCompanyJobs(Account account, String jobStatus, int page, int size, String sortBy, String sortDir);
+
+//    Page<CandidateResponse>
+
+
 }

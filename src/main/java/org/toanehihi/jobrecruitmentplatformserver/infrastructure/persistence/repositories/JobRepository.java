@@ -13,5 +13,5 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     @NonNull
     Page<Job> findAll(@NonNull Pageable pageable);
 
-    Page<Job> findJobsByStatus(@NonNull JobStatus jobStatus, Pageable pageable);
+    Page<Job> findJobsByCompany_IdAndStatus(@NonNull Long companyId, @NonNull JobStatus jobStatus, Pageable pageable);
 }

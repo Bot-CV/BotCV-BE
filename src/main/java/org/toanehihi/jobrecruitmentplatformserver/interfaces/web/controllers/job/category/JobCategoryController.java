@@ -11,6 +11,7 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.category.CreateCategoryRequest;
 
 @RestController
+@RequestMapping("/api/job/category")
 public class JobCategoryController {
     private final JobCategoryService jobCategoryService;
 
@@ -19,7 +20,7 @@ public class JobCategoryController {
         this.jobCategoryService = jobCategoryService;
     }
 
-    @GetMapping("/api/public/job/category")
+    @GetMapping
     public DataResponse<PageResult<JobFamily>> getJobFamily(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -30,20 +31,20 @@ public class JobCategoryController {
                 .build();
     }
 
-    @PostMapping("/api/job/category")
+    @PostMapping("/")
     public DataResponse<JobFamily> createJobFamily(@RequestBody CreateCategoryRequest request) {
         return DataResponse.<JobFamily>builder()
                 .data(jobCategoryService.createJobFamily(request))
                 .build();
     }
 
-    @PostMapping("/api/job/category/{jobFamilyId}")
+    @PostMapping("/{jobFamilyId}")
     public DataResponse<SubFamily> getJobFamilyById(@PathVariable Long jobFamilyId, @RequestBody CreateCategoryRequest request) {
         return DataResponse.<SubFamily>builder()
                 .data(jobCategoryService.createSubFamily(jobFamilyId, request))
                 .build();
     }
-    @PostMapping("/api/job/category/{jobFamilyId}/{subFamilyId}")
+    @PostMapping("{jobFamilyId}/{subFamilyId}")
     public DataResponse<JobRole> createJobRole(@PathVariable Long subFamilyId, @RequestBody CreateCategoryRequest request) {
         return DataResponse.<JobRole>builder()
                 .data(jobCategoryService.createJobRole(subFamilyId, request))

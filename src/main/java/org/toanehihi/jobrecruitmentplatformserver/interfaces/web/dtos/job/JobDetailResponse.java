@@ -8,9 +8,9 @@ import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.WorkMode;
 
 import java.time.OffsetDateTime;
 
-@Builder
 @Getter
-public class JobResponse {
+@Builder
+public class JobDetailResponse {
     private Long id;
     private String title;
     private String company;
@@ -26,4 +26,11 @@ public class JobResponse {
     private OffsetDateTime datePosted;
     private OffsetDateTime dateExpires;
     private JobStatus status;
+    private String summary;
+    private String responsibilities;
+    private String requirements;
+    private String niceToHave;
+    private String benefits;
+    private String hiringProcess;
+    private String notes;
 }

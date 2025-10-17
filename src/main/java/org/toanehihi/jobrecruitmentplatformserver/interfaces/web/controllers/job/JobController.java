@@ -8,6 +8,7 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.CurrentU
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.DataResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobDetailResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.UpdateJobRequest;
 
@@ -18,12 +19,14 @@ public class JobController {
     private final JobService jobService;
 
     @GetMapping
-    public PageResult<JobResponse> getAllJobs(
+    public DataResponse<PageResult<JobResponse>> getAllJobs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir) {
-        return jobService.getAllJobs(page, size, sortBy, sortDir);
+        return DataResponse.<PageResult<JobResponse>>builder()
+                .data(jobService.getAllJobs(page, size, sortBy, sortDir))
+                .build();
     }
 
     @PostMapping
@@ -36,7 +39,7 @@ public class JobController {
     @PutMapping("/{jobId}")
     public DataResponse<JobResponse> updateJob(@CurrentUser Account account, @PathVariable Long jobId, @RequestBody UpdateJobRequest request){
         return DataResponse.<JobResponse>builder()
-                .data(jobService.updateJob(account, jobId,request))
+                .data(jobService.updateJob(account, jobId, request))
                 .build();
     }
 
@@ -54,4 +57,10 @@ public class JobController {
                 .build();
     }
 
+    @GetMapping("/public/detail/{jobId}")
+    public DataResponse<JobDetailResponse> getJobDetail(@PathVariable Long jobId){
+        return DataResponse.<JobDetailResponse>builder()
+                .data(jobService.getJobDetail(jobId))
+                .build();
+    }
 }

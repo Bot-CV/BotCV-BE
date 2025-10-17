@@ -7,4 +7,5 @@ public enum EmploymentType {
     INTERN,
     FREELANCE,
     TEMPORARY,
+    VOLUNTEER,
 }

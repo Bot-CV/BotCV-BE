@@ -4,30 +4,30 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.toanehihi.jobrecruitmentplatformserver.application.cloud.service.CloudStorageService;
 import org.toanehihi.jobrecruitmentplatformserver.application.cloud.service.CloudinaryStorageImpl.CloudinaryFileInfo;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.ErrorCode;
-import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
-import org.toanehihi.jobrecruitmentplatformserver.domain.model.Company;
-import org.toanehihi.jobrecruitmentplatformserver.domain.model.CompanyLocation;
-import org.toanehihi.jobrecruitmentplatformserver.domain.model.Location;
-import org.toanehihi.jobrecruitmentplatformserver.domain.model.Recruiter;
-import org.toanehihi.jobrecruitmentplatformserver.domain.model.Resource;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.*;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.JobStatus;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.company.CompanyMapper;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job.JobMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.recruiter.RecruiterMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.resource.ResourceMapper;
-import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.CompanyRepository;
-import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.LocationRepository;
-import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.RecruiterRepository;
-import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.ResourceRepository;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.*;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.security.CurrentAccountProvider;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyLocationRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.recruiter.RecruiterRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.recruiter.RecruiterResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
@@ -35,6 +35,7 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.R
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RecruiterServiceImpl implements RecruiterService {
@@ -48,6 +49,8 @@ public class RecruiterServiceImpl implements RecruiterService {
     private final CompanyMapper companyMapper;
     private final ResourceMapper resourceMapper;
     private final CloudStorageService cloudStorageService;
+    private final JobRepository jobRepository;
+    private final JobMapper jobMapper;
 
     @Override
     public RecruiterResponse getProfile() {
@@ -115,6 +118,28 @@ public class RecruiterServiceImpl implements RecruiterService {
                 .build();
         Resource savedResource = resourceRepository.save(resource);
         return resourceMapper.toResponse(savedResource);
+    }
+
+    @Override
+    public Page<JobResponse> getCompanyJobs(Account account, String jobStatus, int page, int size, String sortBy, String sortDir) {
+        Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
+
+        if (recruiter.getCompany() == null) {
+            throw new AppException(ErrorCode.RECRUITER_COMPANY_NOT_FOUND);
+        }
+
+        Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<Job> jobs = jobRepository.findJobsByCompany_IdAndStatus(recruiter.getCompany().getId(), JobStatus.valueOf(jobStatus), pageable);
+
+        log.info(String.valueOf(jobs.getSize()));
+        if(jobs.isEmpty()) {
+            throw new AppException(ErrorCode.JOB_NOT_FOUND);
+        }
+
+        return jobs.map(jobMapper::toResponse);
     }
 
     // Private methods

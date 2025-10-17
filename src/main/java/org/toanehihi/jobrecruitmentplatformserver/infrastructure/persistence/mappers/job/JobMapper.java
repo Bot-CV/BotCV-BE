@@ -3,6 +3,7 @@ package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.ma
 import org.springframework.stereotype.Component;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.JobDescription;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobDetailResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Job;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Location;
@@ -35,14 +36,44 @@ public class JobMapper {
                 .datePosted(job.getDatePosted())
                 .dateExpires(job.getDateExpires())
                 .status(job.getStatus())
-                .summary(job.getDescription().getSummary())
+                .maxCandidates(job.getMaxCandidates() != null ? job.getMaxCandidates() : null)
+                .build();
+    }
+
+    public JobDetailResponse toJobDetailResponse(Job job){
+        Location jobLocation = job.getLocation();
+        String location = null;
+        if (jobLocation != null){
+            location = jobLocation.getStreetAddress() + ", " +
+                    jobLocation.getWard() + ", " +
+                    jobLocation.getDistrict() + ", " +
+                    jobLocation.getProvinceCity() + ", " +
+                    jobLocation.getCountry();
+        }
+
+        return JobDetailResponse.builder()
+                .id(job.getId())
+                .title(job.getTitle())
+                .company(job.getCompany().getName())
+                .jobRole(job.getJobRole().getName())
+                .seniority(job.getSeniority())
+                .minExperienceYears(job.getMinExperienceYears())
+                .location(location)
+                .workMode(job.getWorkMode())
+                .salaryMin(job.getSalaryMin())
+                .salaryMax(job.getSalaryMax())
+                .currency(job.getCurrency())
+                .datePosted(job.getDatePosted())
+                .dateExpires(job.getDateExpires())
+                .status(job.getStatus())
+                .maxCandidates(job.getMaxCandidates() != null ? job.getMaxCandidates() : null)
                 .responsibilities(job.getDescription().getResponsibilities())
                 .requirements(job.getDescription().getRequirements())
                 .niceToHave(job.getDescription().getNiceToHave())
                 .benefits(job.getDescription().getBenefits())
                 .hiringProcess(job.getDescription().getHiringProcess())
                 .notes(job.getDescription().getNotes())
-                .maxCandidates(job.getMaxCandidates() != null ? job.getMaxCandidates() : null)
+                .summary(job.getDescription().getSummary())
                 .build();
     }
 
