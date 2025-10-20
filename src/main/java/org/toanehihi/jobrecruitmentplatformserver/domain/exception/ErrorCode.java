@@ -66,8 +66,12 @@ public enum ErrorCode {
     // Location (1601 - 1700)
     LOCATION_NOT_FOUND(1601, "Location not found", HttpStatus.NOT_FOUND),
 
-    // Email (9601 - 9700)
+    // Email (9601 - 9650)
     EMAIL_SEND_FAILED(9601, "Failed to send email", HttpStatus.BAD_GATEWAY),
+
+    // Resource (9651 - 9700)
+    RESOURCE_NOT_FOUND(9651, "Resource not found", HttpStatus.NOT_FOUND),
+    RESOURCE_TYPE_MISMATCH(9652, "Resource type mismatch", HttpStatus.BAD_REQUEST),
 
     // Database constraint violations(9701 - 9800)
     DATABASE_CONSTRAINT_VIOLATION(9701, "Database constraint violated", HttpStatus.BAD_REQUEST),

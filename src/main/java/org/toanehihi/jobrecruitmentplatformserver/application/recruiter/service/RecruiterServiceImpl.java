@@ -19,6 +19,7 @@ import org.toanehihi.jobrecruitmentplatformserver.domain.model.*;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.JobStatus;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.company.CompanyMapper;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job.JobApplicationMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job.JobMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.recruiter.RecruiterMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.resource.ResourceMapper;
@@ -53,6 +54,7 @@ public class RecruiterServiceImpl implements RecruiterService {
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
     private final JobApplicationRepository jobApplicationRepository;
+    private final JobApplicationMapper jobApplicationMapper;
 
     @Override
     public RecruiterResponse getProfile() {
@@ -165,7 +167,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 
         Page<JobApplication> applications = jobApplicationRepository.findByJobId(jobId, pageable);
 
-        return applications.map(jobMapper::toJobApplicantResponse);
+        return applications.map(jobApplicationMapper::toApplicantResponse);
     }
 
     // Private methods

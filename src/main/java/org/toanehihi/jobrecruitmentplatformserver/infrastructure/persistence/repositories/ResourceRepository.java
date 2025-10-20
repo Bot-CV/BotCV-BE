@@ -3,9 +3,13 @@ package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.re
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Resource;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
+
+import java.util.Optional;
 
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
+    Optional<Resource> findByIdAndResourceType(Long id, ResourceType resourceType);
 }
 
 
