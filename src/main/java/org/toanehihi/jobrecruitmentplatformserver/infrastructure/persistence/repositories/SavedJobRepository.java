@@ -5,10 +5,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Candidate;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.Job;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.SavedJob;
 
 @Repository
 public interface SavedJobRepository extends JpaRepository<SavedJob, Long> {
-    void deleteByCandidateAndJobId(Candidate candidate, Long jobId);
+    void deleteByCandidateAndJob(Candidate candidate, Job job);
     Page<SavedJob> findByCandidateId(Long candidateId, Pageable pageable);
 }
