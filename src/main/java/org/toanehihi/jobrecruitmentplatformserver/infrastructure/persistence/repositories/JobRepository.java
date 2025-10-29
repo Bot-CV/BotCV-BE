@@ -3,10 +3,13 @@ package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.re
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Job;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.JobStatus;
+
+import java.util.List;
 
 @Repository
 public interface JobRepository extends JpaRepository<Job, Long> {
@@ -16,4 +19,12 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     Page<Job> findJobsByCompany_IdAndStatus(@NonNull Long companyId, @NonNull JobStatus jobStatus, Pageable pageable);
 
     Long countByCompany_IdAndStatus(@NonNull Long companyId, @NonNull JobStatus jobStatus);
+
+    @Query(value = """
+    SELECT * FROM jobs
+    WHERE jobs.company_id = ?1
+    ORDER BY jobs.date_posted DESC
+    LIMIT 3
+    """, nativeQuery = true)
+    List<Job> findNewestJob(Long companyId);
 }

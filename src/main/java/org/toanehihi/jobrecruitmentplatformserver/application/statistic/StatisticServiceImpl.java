@@ -1,18 +1,23 @@
 package org.toanehihi.jobrecruitmentplatformserver.application.statistic;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.toanehihi.jobrecruitmentplatformserver.application.job.service.JobService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.ErrorCode;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Job;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.JobApplication;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Recruiter;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ApplicationStatus;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.JobStatus;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job.JobMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.JobApplicationRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.JobRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.RecruiterRepository;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.statistic.NewestJobApplication;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.statistic.StatisticResponse;
 
 import java.time.OffsetDateTime;
@@ -20,6 +25,7 @@ import java.time.ZonedDateTime;
 import java.time.temporal.WeekFields;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StatisticServiceImpl implements StatisticService {
@@ -27,6 +33,7 @@ public class StatisticServiceImpl implements StatisticService {
     private final JobRepository jobRepository;
     private final RecruiterRepository recruiterRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final JobMapper jobMapper;
 
     @Override
     public StatisticResponse getPlatformStatistics(Account account) {
@@ -63,11 +70,32 @@ public class StatisticServiceImpl implements StatisticService {
             weeklyApplicationCount.put(currentWeek - i, count);
         }
 
+        List<JobResponse> newestJobsList = jobRepository.findNewestJob(recruiter.getCompany().getId()).stream()
+                .map(jobMapper::toResponse)
+                .toList();
+
+        List<NewestJobApplication> newestJobApplications = jobApplicationRepository.findTop3ByJobCompanyIdOrderByAppliedAtDesc(recruiter.getCompany().getId())
+                .orElseThrow(() -> new AppException(ErrorCode.JOB_APPLICATION_NOT_FOUND))
+                .stream()
+                .map(jobApplication -> {
+                    return NewestJobApplication.builder()
+                            .candidateName(jobApplication.getCandidate().getFullName())
+                            .jobTitle(jobApplication.getJob().getTitle())
+                            .appliedAt(jobApplication.getAppliedAt())
+                            .build();
+                }).toList();
+
+        for(NewestJobApplication data:newestJobApplications){
+            log.info(data.getCandidateName() + " " + data.getJobTitle() + " " + data.getAppliedAt());
+        }
+
         return StatisticResponse.builder()
                 .currentPublishJobCount(currentPublishJobCount)
                 .totalNewApplicationCount(totalNewApplicationCount)
                 .totalPendingApplicationCount(totalPendingApplicationCount)
                 .weeklyApplicationCount(new TreeMap<>(weeklyApplicationCount))
+                .newestJobApplications(newestJobApplications)
+                .newestJobs(newestJobsList)
                 .build();
     }
 }
