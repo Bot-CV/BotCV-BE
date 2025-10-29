@@ -47,6 +47,13 @@ CREATE TYPE application_status AS ENUM (
 
 CREATE TYPE resource_type AS ENUM ('AVATAR', 'CV', 'COMPANY_LOGO');
 
+CREATE TYPE event_type AS ENUM (
+    'SEARCH_QUERY',
+    'JOB_VIEWED',
+    'JOB_APPLIED',
+    'JOB_SAVED'
+);
+
 -- =====================================================
 -- CORE TABLES
 -- =====================================================
@@ -385,3 +392,14 @@ CREATE TABLE
     );
 
 CREATE INDEX idx_resources_uploaded_at ON resources (uploaded_at DESC);
+
+CREATE TABLE
+    analytics (
+        id BIGSERIAL PRIMARY KEY,
+        account_id BIGINT,
+        event_type event_type NOT NULL,
+        target_id BIGINT,
+        event_data JSONB,
+        occurred_at TIMESTAMPTZ (3) NOT NULL DEFAULT NOW (),
+        CONSTRAINT fk_analytics_events_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE SET NULL
+    );
