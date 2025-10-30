@@ -117,6 +117,7 @@ CREATE TABLE
         description TEXT,
         phone VARCHAR(20),
         email VARCHAR(255),
+        industry VARCHAR(100),
         logo_resource_id BIGINT,
         verified BOOLEAN NOT NULL DEFAULT FALSE,
         date_created TIMESTAMPTZ (3) NOT NULL DEFAULT NOW ()

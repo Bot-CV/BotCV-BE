@@ -35,6 +35,8 @@ public class Company {
 
     private String email;
 
+    private String industry;
+
 	@Column(name = "size")
 	private String size;
 

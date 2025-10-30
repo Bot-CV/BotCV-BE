@@ -21,6 +21,7 @@ public class CompanyMapper {
         company.setDescription(request.getDescription());
         company.setPhone(request.getPhone());
         company.setEmail(request.getEmail());
+        company.setIndustry(request.getIndustry());
     }
 
     public CompanyResponse toResponse(Company company) {

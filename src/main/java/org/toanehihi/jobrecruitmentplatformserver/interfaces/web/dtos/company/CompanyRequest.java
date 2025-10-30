@@ -12,4 +12,5 @@ public class CompanyRequest {
     private String description;
     private String phone;
     private String email;
+    private String industry;
 }
