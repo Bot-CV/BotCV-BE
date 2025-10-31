@@ -24,5 +24,5 @@ public class UpdateJobRequest {
     private String benefits;
     private String hiringProcess;
     private String notes;
-    private List<Long> skillIds;
+    private List<String> skills;
 }

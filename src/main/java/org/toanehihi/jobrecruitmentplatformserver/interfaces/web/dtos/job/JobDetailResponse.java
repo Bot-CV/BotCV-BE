@@ -5,8 +5,10 @@ import lombok.Getter;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.JobStatus;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.SeniorityLevel;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.WorkMode;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.skill.SkillResponse;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Getter
 @Builder
@@ -33,4 +35,5 @@ public class JobDetailResponse {
     private String benefits;
     private String hiringProcess;
     private String notes;
+    private List<SkillResponse> skills;
 }

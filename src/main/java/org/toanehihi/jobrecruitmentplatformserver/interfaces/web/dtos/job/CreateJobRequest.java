@@ -33,5 +33,5 @@ public class CreateJobRequest {
 
     private boolean saveAsDraft;
 
-    private List<Long> skillIds;
+    private List<String> skills;
 }
