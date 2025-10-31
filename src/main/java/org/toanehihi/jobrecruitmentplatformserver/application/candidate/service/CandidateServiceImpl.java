@@ -165,6 +165,10 @@ public class CandidateServiceImpl implements CandidateService {
                 .name(fileInfo.fileName())
                 .build();
         Resource savedResource = resourceRepository.save(resource);
+
+        candidate.setAvatarResourceId(savedResource.getId());
+        candidate.setDateUpdated(OffsetDateTime.now());
+        candidateRepository.save(candidate);
         return resourceMapper.toResponse(savedResource);
     }
 
