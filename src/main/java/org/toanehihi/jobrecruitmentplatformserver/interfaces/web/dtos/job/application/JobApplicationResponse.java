@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 import lombok.Data;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
 
 @Data
 @Builder
@@ -20,6 +21,6 @@ public class JobApplicationResponse {
     private CompanyResponse company;
     private JobResponse jobResponse;
     private ApplicationStatus status;
-    private Long cvResourceId;
+    private ResourceResponse resource;
     private OffsetDateTime appliedAt;
 }

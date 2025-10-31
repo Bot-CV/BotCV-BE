@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.SeniorityLevel;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.location.LocationResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.skill.CandidateSkillResponse;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -27,7 +28,8 @@ public class CandidateResponse {
     private String currency;
     private Boolean remotePref;
     private Boolean relocationPref;
-    private Long avatarResourceId;
+//    private Long avatarResourceId;
+    private ResourceResponse resource;
     private String bio;
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateUpdated;

@@ -36,7 +36,9 @@ public class JobApplicationMapper {
                 .jobResponse(jobMapper.toResponse(jobApplication.getJob()))
                 .company(companyMapper.toResponse(ja.getJob().getCompany()))
                 .status(jobApplication.getStatus())
-                .cvResourceId(jobApplication.getCvResourceId())
+                .resource(resourceMapper
+                        .toResponse(resourceRepository.findByIdAndResourceType(jobApplication.getCvResourceId(), ResourceType.CV)
+                                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND))))
                 .appliedAt(jobApplication.getAppliedAt())
                 .build();
     }

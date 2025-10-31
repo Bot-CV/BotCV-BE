@@ -4,8 +4,11 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Candidate;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.location.LocationMapper;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.resource.ResourceMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.skill.CandidateSkillMapper;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.ResourceRepository;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.candidate.CandidateRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.candidate.CandidateResponse;
 
@@ -16,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 public class CandidateMapper {
     private final LocationMapper locationMapper;
     private final CandidateSkillMapper candidateSkillMapper;
+    private final ResourceRepository resourceRepository;
+    private final ResourceMapper resourceMapper;
 
     public void updateCandidate(Candidate candidate, CandidateRequest request) {
         candidate.setFullName(request.getFullName());
@@ -42,7 +47,8 @@ public class CandidateMapper {
                 .currency(candidate.getCurrency())
                 .remotePref(candidate.getRemotePref())
                 .relocationPref(candidate.getRelocationPref())
-                .avatarResourceId(candidate.getAvatarResourceId())
+                .resource(resourceMapper.toResponse(resourceRepository.findByIdAndResourceType(candidate.getAvatarResourceId(), ResourceType.AVATAR)
+                                .orElseThrow(() -> new RuntimeException("Avatar resource not found"))))
                 .bio(candidate.getBio())
                 .dateCreated(candidate.getDateCreated())
                 .dateUpdated(candidate.getDateUpdated())
