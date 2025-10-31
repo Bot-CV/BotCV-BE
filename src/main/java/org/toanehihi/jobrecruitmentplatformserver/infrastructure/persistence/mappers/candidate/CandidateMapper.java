@@ -3,6 +3,8 @@ package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.ma
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
+import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
+import org.toanehihi.jobrecruitmentplatformserver.domain.exception.ErrorCode;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Candidate;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.location.LocationMapper;
@@ -47,8 +49,9 @@ public class CandidateMapper {
                 .currency(candidate.getCurrency())
                 .remotePref(candidate.getRemotePref())
                 .relocationPref(candidate.getRelocationPref())
+                .email(candidate.getAccount().getEmail())
                 .resource(resourceMapper.toResponse(resourceRepository.findByIdAndResourceType(candidate.getAvatarResourceId(), ResourceType.AVATAR)
-                                .orElseThrow(() -> new RuntimeException("Avatar resource not found"))))
+                                .orElseThrow(() -> new AppException(ErrorCode.AVATAR_RESOURCE_NOT_FOUND))))
                 .bio(candidate.getBio())
                 .dateCreated(candidate.getDateCreated())
                 .dateUpdated(candidate.getDateUpdated())

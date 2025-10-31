@@ -12,6 +12,7 @@ import lombok.Getter;
 public class CandidateRequest {
     private String fullName;
     private String phone;
+    private String email;
     private LocationRequest location;
     private SeniorityLevel seniority;
     private Integer salaryExpectMin;

@@ -83,14 +83,10 @@ public class StatisticServiceImpl implements StatisticService {
                             .build();
                 }).toList();
 
-        for (NewestJobApplication data : newestJobApplications) {
-            log.info(data.getCandidateName() + " " + data.getJobTitle() + " " + data.getAppliedAt());
-        }
-
         return StatisticResponse.builder()
-                .currentPublishJobCount(currentPublishJobCount)
-                .totalNewApplicationCount(totalNewApplicationCount)
-                .totalPendingApplicationCount(totalPendingApplicationCount)
+                .currentPublishJobCount(currentPublishJobCount != 0 ? currentPublishJobCount : 0)
+                .totalNewApplicationCount(totalNewApplicationCount != 0 ? totalNewApplicationCount : 0)
+                .totalPendingApplicationCount(totalPendingApplicationCount != 0 ? totalPendingApplicationCount : 0)
                 .weeklyApplicationCount(new TreeMap<>(weeklyApplicationCount))
                 .newestJobApplications(newestJobApplications)
                 .newestJobs(newestJobsList)

@@ -2,6 +2,7 @@ package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.ma
 
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Company;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
@@ -12,6 +13,7 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.Co
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CompanyMapper {
@@ -30,6 +32,7 @@ public class CompanyMapper {
     }
 
     public CompanyResponse toResponse(Company company) {
+        log.info(String.valueOf(company.getLogoResourceId()));
         return CompanyResponse.builder()
                 .id(company.getId())
                 .name(company.getName())
@@ -39,7 +42,7 @@ public class CompanyMapper {
                 .phone(company.getPhone())
                 .industry(company.getIndustry())
                 .description(company.getDescription())
-                .resource(resourceRepository.findByIdAndResourceType(company.getId(), ResourceType.COMPANY_LOGO)
+                .resource(resourceRepository.findByIdAndResourceType(company.getLogoResourceId(), ResourceType.COMPANY_LOGO)
                         .map(resourceMapper::toResponse)
                         .orElse(null))
                 .verified(company.isVerified())

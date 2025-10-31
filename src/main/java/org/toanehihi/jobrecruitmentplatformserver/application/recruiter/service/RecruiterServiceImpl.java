@@ -59,7 +59,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 
     @Override
     public RecruiterResponse getProfile() {
-        return recruiterMapper.toReponse(getCurrentRecruiter());
+        return recruiterMapper.toResponse(getCurrentRecruiter());
     }
 
     @Override
@@ -68,7 +68,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 
         recruiter.setFullName(request.getFullName());
         Recruiter savedRecruiter = recruiterRepository.save(recruiter);
-        return recruiterMapper.toReponse(savedRecruiter);
+        return recruiterMapper.toResponse(savedRecruiter);
     }
 
     @Override

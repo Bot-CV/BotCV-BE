@@ -21,6 +21,7 @@ public class CandidateResponse {
     private Long accountId;
     private String fullName;
     private String phone;
+    private String email;
     private LocationResponse location;
     private SeniorityLevel seniority;
     private Integer salaryExpectMin;

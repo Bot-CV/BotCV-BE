@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Builder;
 import lombok.Data;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
 
 @Data
 @Builder
@@ -17,8 +19,9 @@ public class RecruiterResponse {
     private Long accountId;
     private String fullName;
     private String phone;
-    private Long avatarResourceId;
-    private Company company;
+    private String email;
+    private ResourceResponse resource;
+    private CompanyResponse company;
     private OffsetDateTime dateCreated;
     private OffsetDateTime dateUpdated;
 }
