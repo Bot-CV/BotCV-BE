@@ -38,6 +38,13 @@ public class RecruiterController {
                 .build();
     }
 
+    @PutMapping("/company")
+    DataResponse<CompanyResponse> updateCompany(@RequestBody CompanyRequest request) {
+        return DataResponse.<CompanyResponse>builder()
+                .data(recruiterService.updateCompany(request))
+                .build();
+    }
+
     @PostMapping("/avatar")
     DataResponse<ResourceResponse> updateAvatar(@RequestParam("file") MultipartFile file) {
         return DataResponse.<ResourceResponse>builder()
@@ -75,10 +82,10 @@ public class RecruiterController {
     DataResponse<JobApplicantResponse> processCandidate(
             @CurrentUser Account account,
             @PathVariable Long jobApplicationId,
-            @RequestParam(value = "action") String action
-    ){
+            @RequestParam(value = "action") String action) {
         return DataResponse.<JobApplicantResponse>builder()
                 .data(recruiterService.processCandidate(account, jobApplicationId, action))
                 .build();
     }
+
 }

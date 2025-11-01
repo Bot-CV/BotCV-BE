@@ -72,12 +72,6 @@ public class RecruiterServiceImpl implements RecruiterService {
     }
 
     @Override
-    public CompanyResponse getCompany(Long companyId) {
-        Company company = companyRepository.findById(companyId).orElseThrow(() -> new AppException(ErrorCode.RECRUITER_COMPANY_NOT_FOUND));
-        return companyMapper.toResponse(company);
-    }
-
-    @Override
     @Transactional
     public CompanyResponse updateCompany(CompanyRequest request) {
         Recruiter recruiter = getCurrentRecruiter();
@@ -183,7 +177,8 @@ public class RecruiterServiceImpl implements RecruiterService {
     @Override
     public JobApplicantResponse processCandidate(Account account, Long jobApplicationId, String action) {
         action = action.toUpperCase();
-        if(!action.equals(ApplicationStatus.REVIEWED.toString()) && !action.equals(ApplicationStatus.REJECTED.toString())) {
+        if (!action.equals(ApplicationStatus.REVIEWED.toString())
+                && !action.equals(ApplicationStatus.REJECTED.toString())) {
             throw new AppException(ErrorCode.INVALID_REQUEST_DATA);
         }
 
@@ -193,11 +188,11 @@ public class RecruiterServiceImpl implements RecruiterService {
         Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
 
-        if(!jobApplication.getJob().getCompany().getId().equals(recruiter.getCompany().getId())) {
+        if (!jobApplication.getJob().getCompany().getId().equals(recruiter.getCompany().getId())) {
             throw new AppException(ErrorCode.RECRUITER_UNAUTHORIZED_ACCESS_JOB_APPLICANTS);
         }
 
-        if(!jobApplication.getStatus().equals(ApplicationStatus.SUBMITTED)) {
+        if (!jobApplication.getStatus().equals(ApplicationStatus.SUBMITTED)) {
             throw new AppException(ErrorCode.JOB_ALREADY_PROCESSED);
         }
 

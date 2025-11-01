@@ -64,11 +64,15 @@ public enum ErrorCode {
     JOB_ALREADY_PROCESSED(1509, "Job already processed", HttpStatus.CONFLICT),
     JOB_ALREADY_SAVED_TO_THIS_ACCOUNT(1510, "Job already saved to this account", HttpStatus.BAD_REQUEST),
 
-    // Skill (1701 - 1750)
-    SKILL_NOT_FOUND(1701, "Skill not found", HttpStatus.NOT_FOUND),
-
     // Location (1601 - 1700)
     LOCATION_NOT_FOUND(1601, "Location not found", HttpStatus.NOT_FOUND),
+
+    // Skill (1701 - 1800)
+    SKILL_NOT_FOUND(1701, "Skill not found", HttpStatus.NOT_FOUND),
+
+    // Company (1801 - 1900)
+    COMPANY_NOT_FOUND(1801, "Company not found", HttpStatus.NOT_FOUND),
+    COMPANY_HAS_BEEN_VERIFIED(1802, "Company has been verified", HttpStatus.FORBIDDEN),
 
     // Email (9601 - 9650)
     EMAIL_SEND_FAILED(9601, "Failed to send email", HttpStatus.BAD_GATEWAY),
