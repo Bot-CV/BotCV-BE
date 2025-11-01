@@ -69,6 +69,9 @@ public enum ErrorCode {
 
     // Skill (1701 - 1800)
     SKILL_NOT_FOUND(1701, "Skill not found", HttpStatus.NOT_FOUND),
+    INTERVIEW_NOT_FOUND(1702, "Interview not found", HttpStatus.NOT_FOUND),
+    RECRUITER_UNAUTHORIZED_ACCESS_INTERVIEW(1703, "Recruiter unauthorized to access this interview",
+            HttpStatus.FORBIDDEN),
 
     // Company (1801 - 1900)
     COMPANY_NOT_FOUND(1801, "Company not found", HttpStatus.NOT_FOUND),
@@ -81,6 +84,7 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(9651, "Resource not found", HttpStatus.NOT_FOUND),
     RESOURCE_TYPE_MISMATCH(9652, "Resource type mismatch", HttpStatus.BAD_REQUEST),
     RESOURCE_UPLOAD_FAILED(9653, "Resource upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    RESOURCE_DOWNLOAD_FAILED(9654, "Resource download failed", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Database constraint violations(9701 - 9800)
     DATABASE_CONSTRAINT_VIOLATION(9701, "Database constraint violated", HttpStatus.BAD_REQUEST),

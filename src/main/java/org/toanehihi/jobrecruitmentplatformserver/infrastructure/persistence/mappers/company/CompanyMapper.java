@@ -32,7 +32,6 @@ public class CompanyMapper {
     }
 
     public CompanyResponse toResponse(Company company) {
-        log.info(String.valueOf(company.getLogoResourceId()));
         return CompanyResponse.builder()
                 .id(company.getId())
                 .name(company.getName())

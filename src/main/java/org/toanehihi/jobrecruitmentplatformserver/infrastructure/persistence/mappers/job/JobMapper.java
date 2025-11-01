@@ -2,6 +2,7 @@ package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.ma
 
 import org.springframework.stereotype.Component;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.JobDescription;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.skill.SkillMapper;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobDetailResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
@@ -10,6 +11,12 @@ import org.toanehihi.jobrecruitmentplatformserver.domain.model.Location;
 
 @Component
 public class JobMapper {
+    private final SkillMapper skillMapper;
+
+    public JobMapper(SkillMapper skillMapper) {
+        this.skillMapper = skillMapper;
+    }
+
     public JobResponse toResponse(Job job){
         Location jobLocation = job.getLocation();
         String location = null;
@@ -37,6 +44,7 @@ public class JobMapper {
                 .dateExpires(job.getDateExpires())
                 .status(job.getStatus())
                 .maxCandidates(job.getMaxCandidates() != null ? job.getMaxCandidates() : null)
+                .skills(job.getSkills().stream().map(skillMapper::toResponse).toList())
                 .build();
     }
 
@@ -74,6 +82,7 @@ public class JobMapper {
                 .hiringProcess(job.getDescription().getHiringProcess())
                 .notes(job.getDescription().getNotes())
                 .summary(job.getDescription().getSummary())
+                .skills(job.getSkills().stream().map(skillMapper::toResponse).toList())
                 .build();
     }
 

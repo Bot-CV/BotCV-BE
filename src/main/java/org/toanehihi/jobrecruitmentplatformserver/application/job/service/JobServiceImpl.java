@@ -65,19 +65,6 @@ public class JobServiceImpl implements JobService {
         return PageResult.from(jobs);
     }
 
-    // @Override
-    // public PageResult<JobResponse> getPublishJobs(int page, int size, String
-    // sortBy, String sortDir){
-    // Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC :
-    // Sort.Direction.DESC;
-    // Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-    //
-    // Page<JobResponse> jobs = jobRepository.findJobsByStatus(JobStatus.PUBLISHED,
-    // pageable)
-    // .map(jobMapper::toResponse);
-    // return PageResult.from(jobs);
-    // }
-
     @Override
     @Transactional
     @HasRecruiterRole
@@ -92,10 +79,14 @@ public class JobServiceImpl implements JobService {
         JobRole jobRole = jobRoleRepository.findById(request.getJobRoleId())
                 .orElseThrow(() -> new AppException(ErrorCode.JOB_ROLE_NOT_FOUND));
 
-        Set<Skill> skills = request.getSkillIds().stream()
-                .map(skillId -> {
-                    return skillRepository.findById(skillId)
-                            .orElseThrow(() -> new AppException(ErrorCode.SKILL_NOT_FOUND));
+        Set<Skill> skills = request.getSkills().stream()
+                .map(skill -> {
+                    return skillRepository.findByName(skill)
+                            .orElseGet(() -> {
+                                Skill newSkill = new Skill();
+                                newSkill.setName(skill);
+                                return skillRepository.save(newSkill);
+                            });
                 })
                 .collect(Collectors.toSet());
 
@@ -182,11 +173,15 @@ public class JobServiceImpl implements JobService {
             job.setJobRole(jobRole);
         }
 
-        if (request.getSkillIds() != null && !request.getSkillIds().isEmpty()) {
-            Set<Skill> skills = request.getSkillIds().stream()
-                    .map(skillId -> {
-                        return skillRepository.findById(skillId)
-                                .orElseThrow(() -> new AppException(ErrorCode.SKILL_NOT_FOUND));
+        if (request.getSkills() != null && !request.getSkills().isEmpty()) {
+            Set<Skill> skills = request.getSkills().stream()
+                    .map(skill -> {
+                        return skillRepository.findByName(skill)
+                                .orElseGet(() -> {
+                                    Skill newSkill = new Skill();
+                                    newSkill.setName(skill);
+                                    return skillRepository.save(newSkill);
+                                });
                     })
                     .collect(Collectors.toSet());
             job.setSkills(skills);
@@ -244,6 +239,7 @@ public class JobServiceImpl implements JobService {
             throw new AppException(ErrorCode.JOB_CLOSED_CANNOT_UPDATE);
         }
         job.setStatus(JobStatus.CANCELED);
+        log.info(job.getStatus().toString());
         return jobMapper.toResponse(jobRepository.save(job));
     }
 

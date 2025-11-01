@@ -2,11 +2,14 @@ package org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.Skill;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.JobStatus;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.SeniorityLevel;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.WorkMode;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.skill.SkillResponse;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Builder
 @Getter
@@ -26,4 +29,5 @@ public class JobResponse {
     private OffsetDateTime datePosted;
     private OffsetDateTime dateExpires;
     private JobStatus status;
+    private List<SkillResponse> skills;
 }

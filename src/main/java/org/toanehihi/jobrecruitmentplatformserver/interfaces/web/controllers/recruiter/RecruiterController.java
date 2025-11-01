@@ -9,6 +9,9 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.CurrentU
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.DataResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.interview.CreateInterviewRequest;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.interview.InterviewResponse;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.interview.UpdateInterviewRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.application.JobApplicantResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.recruiter.RecruiterRequest;
@@ -78,7 +81,7 @@ public class RecruiterController {
                 .build();
     }
 
-    @PatchMapping("/company/{jobId}/applicants/{jobApplicationId}")
+    @PostMapping("/company/applicants/{jobApplicationId}")
     DataResponse<JobApplicantResponse> processCandidate(
             @CurrentUser Account account,
             @PathVariable Long jobApplicationId,
@@ -88,4 +91,21 @@ public class RecruiterController {
                 .build();
     }
 
+    @PostMapping("/company/applicants/interview")
+    DataResponse<InterviewResponse> scheduleInterview(
+            @CurrentUser Account account,
+            @RequestBody CreateInterviewRequest request) {
+        return DataResponse.<InterviewResponse>builder()
+                .data(recruiterService.scheduleInterview(account, request))
+                .build();
+    }
+
+    @PatchMapping("/company/applicants/interview")
+    DataResponse<InterviewResponse> updateInterview(
+            @CurrentUser Account account,
+            @RequestBody UpdateInterviewRequest request) {
+        return DataResponse.<InterviewResponse>builder()
+                .data(recruiterService.updateInterview(account, request))
+                .build();
+    }
 }
