@@ -9,6 +9,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.web.client.RestClientException;
 import org.toanehihi.jobrecruitmentplatformserver.application.analytics.service.AnalyticService;
 import org.toanehihi.jobrecruitmentplatformserver.application.outbox.service.OutboxEventService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
@@ -23,12 +28,10 @@ import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.rep
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobDetailResponse;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.UpdateJobRequest;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,8 @@ public class JobServiceImpl implements JobService {
     private final AnalyticService analyticService;
     private final OutboxEventService outboxEventService;
     private final ObjectMapper objectMapper;
+    private final RestTemplate restTemplate;
+    private final String SEARCH_SERVICE_URL = "http://localhost:8000/search";
 
     @Override
     public JobDetailResponse getJobDetail(Long id) {
@@ -320,6 +325,40 @@ public class JobServiceImpl implements JobService {
         }
         
         return jobResponse;
+    }
+
+    @Override
+    public JobSearchResponse searchJobByTitle(JobSearchRequest request) {
+        try {
+            // Setup HTTP headers
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+
+            // Wrap request body in HttpEntity
+            HttpEntity<JobSearchRequest> httpEntity = new HttpEntity<>(request, headers);
+
+            // Make POST request with proper entity
+            JobSearchServiceResponse response = restTemplate.postForObject(
+                    SEARCH_SERVICE_URL,
+                    httpEntity,
+                    JobSearchServiceResponse.class
+            );
+
+            List<JobResponse> jobs = null;
+            if (!response.getJobIds().isEmpty()) {
+                jobs = jobRepository.findAllById(response.getJobIds()).stream()
+                        .map(jobMapper::toResponse)
+                        .toList();
+            }
+
+            return JobSearchResponse.builder()
+                    .jobs(jobs)
+                    .pagination(response.getPagination())
+                    .build();
+        } catch (RestClientException e) {
+            log.error("Error calling search service at {}: {}", SEARCH_SERVICE_URL, e.getMessage(), e);
+            throw new AppException(ErrorCode.SYSTEM_INTERNAL_ERROR);
+        }
     }
 
     @Override
