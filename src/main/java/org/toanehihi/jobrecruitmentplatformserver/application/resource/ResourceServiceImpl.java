@@ -25,7 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 @Service
 @RequiredArgsConstructor
@@ -73,7 +73,7 @@ public class ResourceServiceImpl implements ResourceService {
     private ResourceResponse updateAvatar(
             Long currentAvatarId,
             MultipartFile avatar,
-            Consumer<Long> updateEntity) {
+            LongConsumer updateEntity) {
 
         // Delete existing avatar if present
         Optional<Resource> currentAvatar = resourceRepository
@@ -89,6 +89,7 @@ public class ResourceServiceImpl implements ResourceService {
 
         Resource resource = Resource.builder()
                 .mimeType(fileInfo.mimeType())
+                .contentType(fileInfo.contentType())
                 .resourceType(ResourceType.AVATAR)
                 .url(fileInfo.url())
                 .publicId(fileInfo.publicId())
@@ -123,6 +124,7 @@ public class ResourceServiceImpl implements ResourceService {
         CloudinaryStorageImpl.CloudinaryFileInfo fileInfo = cloudStorageService.storeFile(logo, "company_logo");
         Resource resource = Resource.builder()
                 .mimeType(fileInfo.mimeType())
+                .contentType(fileInfo.contentType())
                 .resourceType(ResourceType.COMPANY_LOGO)
                 .url(fileInfo.url())
                 .publicId(fileInfo.publicId())
@@ -159,6 +161,7 @@ public class ResourceServiceImpl implements ResourceService {
             CloudinaryFileInfo fileInfo = cloudStorageService.storeFile(file, "attestation");
             Resource resource = Resource.builder()
                     .mimeType(fileInfo.mimeType())
+                    .contentType(fileInfo.contentType())
                     .resourceType(ResourceType.ATTESTATION)
                     .url(fileInfo.url())
                     .publicId(fileInfo.publicId())
@@ -171,7 +174,7 @@ public class ResourceServiceImpl implements ResourceService {
                     .build();
             attestations.add(attestation);
         }
-        company.setAttestations(attestations);
+        company.getAttestations().addAll(attestations);
         companyRepository.save(company);
         return attestations.stream()
                 .map(attestation -> resourceMapper.toResponse(attestation.getResource()))

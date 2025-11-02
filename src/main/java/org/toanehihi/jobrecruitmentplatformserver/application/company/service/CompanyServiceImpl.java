@@ -18,7 +18,6 @@ import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.map
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.resource.ResourceMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.AttestationResourceRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.CompanyRepository;
-import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.RecruiterRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.ResourceRepository;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
@@ -33,8 +32,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class CompanyServiceImpl implements CompanyService {
-
-    private final RecruiterRepository recruiterRepository;
     private final ResourceRepository resourceRepository;
     private final CompanyRepository companyRepository;
     private final AttestationResourceRepository attestationResourceRepository;

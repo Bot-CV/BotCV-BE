@@ -45,7 +45,13 @@ CREATE TYPE application_status AS ENUM (
     'REJECTED'
 );
 
-CREATE TYPE resource_type AS ENUM ('AVATAR', 'CV', 'COMPANY_LOGO', 'JOB_ATTACHMENT');
+CREATE TYPE resource_type AS ENUM (
+    'AVATAR',
+    'CV',
+    'COMPANY_LOGO',
+    'JOB_ATTACHMENT',
+    'ATTESTATION'
+);
 
 CREATE TYPE event_type AS ENUM (
     'SEARCH_QUERY',
@@ -54,12 +60,7 @@ CREATE TYPE event_type AS ENUM (
     'JOB_SAVED'
 );
 
-CREATE TYPE interview_status AS ENUM (
-    'SCHEDULED',
-    'COMPLETED',
-    'CANCELED',
-    'NO_SHOW'
-);
+CREATE TYPE interview_status AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELED', 'NO_SHOW');
 
 -- =====================================================
 -- CORE TABLES
@@ -441,4 +442,3 @@ CREATE TABLE
         occurred_at TIMESTAMPTZ (3) NOT NULL DEFAULT NOW (),
         CONSTRAINT fk_analytics_events_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE SET NULL
     );
-
