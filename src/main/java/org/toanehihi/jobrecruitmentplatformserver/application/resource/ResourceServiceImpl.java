@@ -90,6 +90,7 @@ public class ResourceServiceImpl implements ResourceService {
         Resource resource = Resource.builder()
                 .mimeType(fileInfo.mimeType())
                 .resourceType(ResourceType.AVATAR)
+                .contentType(fileInfo.contentType())
                 .url(fileInfo.url())
                 .publicId(fileInfo.publicId())
                 .name(fileInfo.fileName())

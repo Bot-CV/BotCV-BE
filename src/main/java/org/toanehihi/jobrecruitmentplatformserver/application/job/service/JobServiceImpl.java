@@ -1,5 +1,6 @@
 package org.toanehihi.jobrecruitmentplatformserver.application.job.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.toanehihi.jobrecruitmentplatformserver.application.analytics.service.AnalyticService;
+import org.toanehihi.jobrecruitmentplatformserver.application.outbox.service.OutboxEventService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.ErrorCode;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.*;
@@ -43,6 +45,8 @@ public class JobServiceImpl implements JobService {
     private final JobApplicationRepository jobApplicationRepository;
     private final JobDescriptionRepository jobDescriptionRepository;
     private final AnalyticService analyticService;
+    private final OutboxEventService outboxEventService;
+    private final ObjectMapper objectMapper;
 
     @Override
     public JobDetailResponse getJobDetail(Long id) {
@@ -100,7 +104,19 @@ public class JobServiceImpl implements JobService {
         job = jobRepository.save(job);
         job.getDescription().setJob(job);
         jobDescriptionRepository.save(job.getDescription());
-        return jobMapper.toResponse(job);
+        
+        // Save outbox event for job creation
+        JobResponse jobResponse = jobMapper.toResponse(job);
+        try {
+            String payload = objectMapper.writeValueAsString(jobResponse);
+            outboxEventService.saveOutboxEvent("JOB", job.getId(), "CREATED", payload);
+            log.debug("Saved outbox event for job creation: jobId={}", job.getId());
+        } catch (Exception e) {
+            log.error("Failed to save outbox event for job creation: jobId={}, error={}", 
+                    job.getId(), e.getMessage(), e);
+        }
+        
+        return jobResponse;
     }
 
     @Override
@@ -122,7 +138,19 @@ public class JobServiceImpl implements JobService {
         updateJobDescription(job, request);
 
         jobRepository.save(job);
-        return jobMapper.toResponse(job);
+        
+        // Save outbox event for job update
+        JobResponse jobResponse = jobMapper.toResponse(job);
+        try {
+            String payload = objectMapper.writeValueAsString(jobResponse);
+            outboxEventService.saveOutboxEvent("JOB", job.getId(), "UPDATED", payload);
+            log.debug("Saved outbox event for job update: jobId={}", job.getId());
+        } catch (Exception e) {
+            log.error("Failed to save outbox event for job update: jobId={}, error={}", 
+                    job.getId(), e.getMessage(), e);
+        }
+        
+        return jobResponse;
     }
 
     private void validateJobCanBeUpdated(Job job) {
@@ -226,6 +254,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Transactional
     public JobResponse cancelJob(Account account, Long id) {
         Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
@@ -240,10 +269,25 @@ public class JobServiceImpl implements JobService {
         }
         job.setStatus(JobStatus.CANCELED);
         log.info(job.getStatus().toString());
-        return jobMapper.toResponse(jobRepository.save(job));
+        
+        job = jobRepository.save(job);
+        
+        // Save outbox event for job cancellation
+        JobResponse jobResponse = jobMapper.toResponse(job);
+        try {
+            String payload = objectMapper.writeValueAsString(jobResponse);
+            outboxEventService.saveOutboxEvent("JOB", job.getId(), "UPDATED", payload);
+            log.debug("Saved outbox event for job cancellation: jobId={}", job.getId());
+        } catch (Exception e) {
+            log.error("Failed to save outbox event for job cancellation: jobId={}, error={}", 
+                    job.getId(), e.getMessage(), e);
+        }
+        
+        return jobResponse;
     }
 
     @Override
+    @Transactional
     @HasAdminRole
     public JobResponse moderateJobPosting(Account account, Long id, String action) {
         if (!account.getRole().getName().equals("ADMIN")) {
@@ -261,14 +305,40 @@ public class JobServiceImpl implements JobService {
             throw new AppException(ErrorCode.JOB_NOT_IN_PENDING_STATUS);
         }
         job.setStatus(action.equals("APPROVE") ? JobStatus.PUBLISHED : JobStatus.CANCELED);
-        return jobMapper.toResponse(jobRepository.save(job));
+        job = jobRepository.save(job);
+        
+        // Save outbox event for job moderation
+        JobResponse jobResponse = jobMapper.toResponse(job);
+        try {
+            String payload = objectMapper.writeValueAsString(jobResponse);
+            String eventType = action.equals("APPROVE") ? "PUBLISHED" : "UPDATED";
+            outboxEventService.saveOutboxEvent("JOB", job.getId(), eventType, payload);
+            log.debug("Saved outbox event for job moderation: jobId={}, action={}", job.getId(), action);
+        } catch (Exception e) {
+            log.error("Failed to save outbox event for job moderation: jobId={}, action={}, error={}", 
+                    job.getId(), action, e.getMessage(), e);
+        }
+        
+        return jobResponse;
     }
 
     @Override
+    @Transactional
     public void deleteJob(Long id) {
-        if (!jobRepository.existsById(id)) {
-            throw new AppException(ErrorCode.JOB_NOT_FOUND);
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.JOB_NOT_FOUND));
+        
+        // Save outbox event for job deletion before deleting
+        try {
+            JobResponse jobResponse = jobMapper.toResponse(job);
+            String payload = objectMapper.writeValueAsString(jobResponse);
+            outboxEventService.saveOutboxEvent("JOB", job.getId(), "DELETED", payload);
+            log.debug("Saved outbox event for job deletion: jobId={}", job.getId());
+        } catch (Exception e) {
+            log.error("Failed to save outbox event for job deletion: jobId={}, error={}", 
+                    job.getId(), e.getMessage(), e);
         }
+        
         jobRepository.deleteById(id);
     }
 }
