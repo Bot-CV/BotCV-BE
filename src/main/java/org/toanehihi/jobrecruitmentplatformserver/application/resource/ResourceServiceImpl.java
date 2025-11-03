@@ -110,6 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
                 .mimeType(fileInfo.mimeType())
                 .contentType(fileInfo.contentType())
                 .resourceType(ResourceType.AVATAR)
+                .contentType(fileInfo.contentType())
                 .url(fileInfo.url())
                 .publicId(fileInfo.publicId())
                 .name(fileInfo.fileName())
