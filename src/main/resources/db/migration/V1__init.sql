@@ -60,6 +60,18 @@ CREATE TYPE event_type AS ENUM (
     'JOB_SAVED'
 );
 
+CREATE TYPE interaction_event_type AS ENUM (
+    'APPLY',
+    'SAVE',
+    'CLICK',
+    'CLICK_FROM_SEARCH',
+    'CLICK_FROM_SIMILAR',
+    'CLICK_FROM_RECOMMENDED',
+    'SKIP_FROM_SEARCH',
+    'SKIP_FROM_SIMILAR',
+    'SKIP_FROM_RECOMMENDED'
+);
+
 CREATE TYPE interview_status AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELED', 'NO_SHOW');
 
 CREATE TYPE outbox_status AS ENUM ('PENDING','SENT','FAILED','DLQ');
@@ -409,6 +421,7 @@ CREATE INDEX idx_saved_jobs_saved_at ON saved_jobs (saved_at DESC);
 CREATE TABLE
     resources (
         id BIGSERIAL PRIMARY KEY,
+        owner_id BIGINT, -- For candidate|s.o who uploaded the resume/avatar etc.
         mime_type TEXT NOT NULL,
         content_type TEXT NOT NULL,
         resource_type resource_type NOT NULL,
@@ -433,14 +446,16 @@ CREATE TABLE
 -- ANATYTICS TABLES
 -- =====================================================
 CREATE TABLE
-    analytics (
+    user_interactions (
         id BIGSERIAL PRIMARY KEY,
         account_id BIGINT,
-        event_type event_type NOT NULL,
-        target_id BIGINT,
+        event_type interaction_event_type NOT NULL,
+        external_id VARCHAR(64) UNIQUE,
+        job_id BIGINT,
         metadata JSONB,
         occurred_at TIMESTAMPTZ (3) NOT NULL DEFAULT NOW (),
-        CONSTRAINT fk_analytics_events_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE SET NULL
+        CONSTRAINT fk_analytics_events_account FOREIGN KEY (account_id) REFERENCES accounts (id) ON DELETE SET NULL,
+        CONSTRAINT fk_analytics_events_job FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE SET NULL
     );
 
 CREATE TABLE outbox_events (

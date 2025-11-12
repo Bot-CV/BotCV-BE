@@ -1,6 +1,8 @@
 spring:
   application:
     name: JobRecruitmentPlatform-Server
+  flyway:
+    enabled: true
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?stringtype=unspecified
     username: ${DATABASE_USERNAME}

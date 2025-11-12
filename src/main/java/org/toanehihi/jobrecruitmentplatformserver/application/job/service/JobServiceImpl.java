@@ -14,7 +14,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClientException;
-import org.toanehihi.jobrecruitmentplatformserver.application.analytics.service.AnalyticService;
+import org.toanehihi.jobrecruitmentplatformserver.application.analytics.service.InteractionService;
+import org.toanehihi.jobrecruitmentplatformserver.application.candidate.service.CandidateService;
 import org.toanehihi.jobrecruitmentplatformserver.application.outbox.service.OutboxEventService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.ErrorCode;
@@ -28,12 +29,15 @@ import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.rep
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.candidate.UserProfileBasedResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.*;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,11 +52,13 @@ public class JobServiceImpl implements JobService {
     private final RecruiterRepository recruiterRepository;
     private final JobApplicationRepository jobApplicationRepository;
     private final JobDescriptionRepository jobDescriptionRepository;
-    private final AnalyticService analyticService;
+    private final InteractionService analyticService;
     private final OutboxEventService outboxEventService;
     private final ObjectMapper objectMapper;
     private final RestTemplate restTemplate;
     private final String SEARCH_SERVICE_URL = "http://localhost:8000/search";
+    private final CandidateRepository candidateRepository;
+    private final CandidateService candidateService;
 
     @Override
     public JobDetailResponse getJobDetail(Long id) {
@@ -347,10 +353,16 @@ public class JobServiceImpl implements JobService {
 
             List<JobResponse> jobs = new ArrayList<>();
             if (!response.getJobIds().isEmpty()) {
-                jobs = jobRepository.findAllById(response.getJobIds()).stream()
+                List<Job> rows = jobRepository.findAllById(response.getJobIds());
+                Map<Long, JobResponse> jobMap = rows.stream()
                         .map(jobMapper::toResponse)
-                        .toList();
+                        .collect(Collectors.toMap(JobResponse::getId, Function.identity()));
+
+                jobs = response.getJobIds().stream()
+                        .map(jobMap::get)
+                        .collect(Collectors.toList());
             }
+
 
             return PageResult.<JobResponse>builder()
                     .content(jobs)
@@ -363,6 +375,14 @@ public class JobServiceImpl implements JobService {
             log.error("Error calling search service at {}: {}", SEARCH_SERVICE_URL, e.getMessage(), e);
             throw new AppException(ErrorCode.SYSTEM_INTERNAL_ERROR);
         }
+    }
+
+    @Override
+    public List<JobResponse> recommendJobs(Account account) {
+        Candidate candidate = candidateRepository.findByAccountId(account.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_CANDIDATE_NOT_FOUND));
+        UserProfileBasedResponse userProfile = candidateService.getUserProfileBasedData(candidate.getId());
+        return List.of();
     }
 
     @Override

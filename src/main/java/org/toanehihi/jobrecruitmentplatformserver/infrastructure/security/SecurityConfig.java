@@ -27,6 +27,8 @@ import org.toanehihi.jobrecruitmentplatformserver.application.auth.service.Custo
 
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -42,14 +44,15 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("*");
-        corsConfiguration.addAllowedMethod("*");
-        corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.setAllowCredentials(false);
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("http://localhost:3000")); // FE origin
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 
@@ -64,7 +67,13 @@ public class SecurityConfig {
             "/api/companies/public/**",
 
             // Analyze resume
-            "/api/resources/resumes/analyze/**"
+            "/api/resources/resumes/analyze/**",
+
+            // Job Search
+            "/api/job/public/search",
+
+            // Testing
+            "/api/candidates/profile/**"
     };
 
     @Bean
