@@ -10,12 +10,12 @@ import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.*;
 
 @RestController
-@RequestMapping("/api/job")
+@RequestMapping("/api/jobs")
 @AllArgsConstructor
 public class JobController {
     private final JobService jobService;
 
-    @GetMapping
+    @GetMapping("/public")
     public DataResponse<PageResult<JobResponse>> getAllJobs(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
