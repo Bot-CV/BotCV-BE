@@ -49,8 +49,8 @@ spring:
             enable: true
   jackson:
     time-zone: Asia/Ho_Chi_Minh
-  profiles:
-    default: dev
+#  profiles:
+#    default: dev
 
 cloudinary:
   cloud-name: ${CLOUDINARY_NAME}
