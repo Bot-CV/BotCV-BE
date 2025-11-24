@@ -18,10 +18,10 @@ public class InteractionController {
     private final InteractionService interactionService;
 
     @PostMapping
-    public DataResponse<?> trackInteraction(
-            @RequestBody List<InteractionEvent> request
-    ) {
+    public DataResponse<String> trackInteraction(@RequestBody List<InteractionEvent> request) {
         interactionService.trackQuery(request);
-        return DataResponse.builder().data("Interaction events published to stream for processing").build();
+        return DataResponse.<String>builder()
+                .data("Interaction events published to stream for processing")
+                .build();
     }
 }

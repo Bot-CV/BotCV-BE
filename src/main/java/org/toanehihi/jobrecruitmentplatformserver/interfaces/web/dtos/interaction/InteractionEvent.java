@@ -13,6 +13,7 @@ import java.util.Map;
 public class InteractionEvent {
     @JsonProperty("job_id")
     private Long jobId;
+    @JsonProperty("account_id")
     private Long accountId;
     @JsonProperty("event_type")
     private InteractionEventType eventType;

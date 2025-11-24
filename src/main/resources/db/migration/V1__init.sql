@@ -74,7 +74,8 @@ CREATE TYPE interaction_event_type AS ENUM (
 
 CREATE TYPE interview_status AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELED', 'NO_SHOW');
 
-CREATE TYPE outbox_status AS ENUM ('PENDING','SENT','FAILED','DLQ');
+CREATE TYPE outbox_status AS ENUM ('PENDING', 'SENT', 'FAILED', 'DLQ');
+
 -- =====================================================
 -- CORE TABLES
 -- =====================================================
@@ -458,16 +459,19 @@ CREATE TABLE
         CONSTRAINT fk_analytics_events_job FOREIGN KEY (job_id) REFERENCES jobs (id) ON DELETE SET NULL
     );
 
-CREATE TABLE outbox_events (
-                               id            BIGSERIAL PRIMARY KEY,
-                               aggregate_type VARCHAR(50)   NOT NULL,        -- 'JOB'
-                               aggregate_id   BIGINT        NOT NULL,        -- job_id
-                               event_type     VARCHAR(20)   NOT NULL,        -- CREATED/UPDATED/DELETED
-                               payload        JSONB         NOT NULL,        -- title/desc/skills/updated_at...
-                               occurred_at    TIMESTAMPTZ   NOT NULL DEFAULT now(),
-                               status         outbox_status NOT NULL DEFAULT 'PENDING',
-                               attempts       INT           NOT NULL DEFAULT 0,
-                               trace_id       UUID          NOT NULL DEFAULT gen_random_uuid()
-);
+CREATE TABLE
+    outbox_events (
+        id BIGSERIAL PRIMARY KEY,
+        aggregate_type VARCHAR(50) NOT NULL, -- 'JOB'
+        aggregate_id BIGINT NOT NULL, -- job_id
+        event_type VARCHAR(20) NOT NULL, -- CREATED/UPDATED/DELETED
+        payload JSONB NOT NULL, -- title/desc/skills/updated_at...
+        occurred_at TIMESTAMPTZ NOT NULL DEFAULT now (),
+        status outbox_status NOT NULL DEFAULT 'PENDING',
+        attempts INT NOT NULL DEFAULT 0,
+        trace_id UUID NOT NULL DEFAULT gen_random_uuid ()
+    );
+
 CREATE INDEX idx_outbox_pending ON outbox_events (status, occurred_at);
+
 CREATE INDEX idx_outbox_agg ON outbox_events (aggregate_type, aggregate_id);
