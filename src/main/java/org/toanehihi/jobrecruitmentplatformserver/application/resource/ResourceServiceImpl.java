@@ -223,6 +223,7 @@ public class ResourceServiceImpl implements ResourceService {
         return resourceMapper.toResponse(savedResource);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public Map<String, Object> analyzeResume(Long resourceId) {
         Resource resource = resourceRepository.findById(resourceId)
