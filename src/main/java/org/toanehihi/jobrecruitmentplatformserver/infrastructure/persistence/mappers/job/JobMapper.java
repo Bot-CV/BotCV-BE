@@ -1,28 +1,40 @@
 package org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Component;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.JobDescription;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.skill.SkillMapper;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.ResourceRepository;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.CreateJobRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobDetailResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobEventPayload;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.JobResponse;
+
+import lombok.RequiredArgsConstructor;
+
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Job;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Location;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.Resource;
 
 @Component
+@RequiredArgsConstructor
 public class JobMapper {
     private final SkillMapper skillMapper;
+    private final ResourceRepository resourceRepository;
 
-    public JobMapper(SkillMapper skillMapper) {
-        this.skillMapper = skillMapper;
-    }
-
-    public JobResponse toResponse(Job job){
+    public JobResponse toResponse(Job job) {
+        String companyLogoUrl = null;
+        if (job.getCompany() != null && job.getCompany().getLogoResourceId() != null) {
+            companyLogoUrl = resourceRepository.findById(job.getCompany().getLogoResourceId())
+                    .map(Resource::getUrl)
+                    .orElse(null);
+        }
         return JobResponse.builder()
                 .id(job.getId())
                 .title(job.getTitle())
                 .company(job.getCompany().getName())
+                .companyLogoUrl(companyLogoUrl)
                 .jobRole(job.getJobRole().getName())
                 .seniority(job.getSeniority())
                 .minExperienceYears(job.getMinExperienceYears())
@@ -39,7 +51,7 @@ public class JobMapper {
                 .build();
     }
 
-    public JobDetailResponse toJobDetailResponse(Job job){
+    public JobDetailResponse toJobDetailResponse(Job job) {
         return JobDetailResponse.builder()
                 .id(job.getId())
                 .title(job.getTitle())
@@ -56,7 +68,9 @@ public class JobMapper {
                 .dateExpires(job.getDateExpires())
                 .status(job.getStatus())
                 .maxCandidates(job.getMaxCandidates() != null ? job.getMaxCandidates() : null)
-                .responsibilities(job.getDescription().getResponsibilities() != null ? job.getDescription().getResponsibilities() : "")
+                .responsibilities(
+                        job.getDescription().getResponsibilities() != null ? job.getDescription().getResponsibilities()
+                                : "")
                 .requirements(job.getDescription().getRequirements())
                 .niceToHave(job.getDescription().getNiceToHave())
                 .benefits(job.getDescription().getBenefits())
@@ -67,7 +81,7 @@ public class JobMapper {
                 .build();
     }
 
-    public Job toEntity(CreateJobRequest request){
+    public Job toEntity(CreateJobRequest request) {
         return Job.builder()
                 .title(request.getTitle())
                 .jobRole(null)
@@ -93,7 +107,7 @@ public class JobMapper {
                 .build();
     }
 
-    public JobEventPayload toEventPayload(Job job){
+    public JobEventPayload toEventPayload(Job job) {
         return JobEventPayload.builder()
                 .id(job.getId())
                 .title(job.getTitle())
@@ -115,7 +129,7 @@ public class JobMapper {
                 .build();
     }
 
-    private String extractLocation(Location jobLocation){
+    private String extractLocation(Location jobLocation) {
         if (jobLocation == null) {
             return null;
         }
@@ -125,7 +139,8 @@ public class JobMapper {
                 jobLocation.getProvinceCity() + ", " +
                 jobLocation.getCountry();
     }
-    private String buildDescription(JobDescription jobDescription){
+
+    private String buildDescription(JobDescription jobDescription) {
         return "Responsibilities: " + jobDescription.getResponsibilities() + "\n" +
                 "Requirements: " + jobDescription.getRequirements() + "\n" +
                 "Nice to have: " + jobDescription.getNiceToHave() + "\n";
