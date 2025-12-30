@@ -56,15 +56,12 @@ public class JobServiceImpl implements JobService {
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
 
-    @Value("${app.search-service-url}")
-    private String searchServiceUrl;
+    @Value("${app.search-and-recommendation-service-url}")
+    private String searchAndRecommendationServiceUrl;
 
     private static final String CREATE_EVENT = "CREATED";
     private static final String UPDATE_EVENT = "UPDATED";
     private static final String DELETE_EVENT = "DELETED";
-
-    @Value("${app.recommend-service-url}")
-    private String recommendServiceUrl;
 
     @Override
     public JobDetailResponse getJobDetail(Long id) {
@@ -344,7 +341,7 @@ public class JobServiceImpl implements JobService {
 
             // Make POST request with proper entity
             JobSearchServiceResponse response = restTemplate.postForObject(
-                    searchServiceUrl,
+                    searchAndRecommendationServiceUrl,
                     httpEntity,
                     JobSearchServiceResponse.class);
 
@@ -368,7 +365,7 @@ public class JobServiceImpl implements JobService {
                     .hasPrevious(response.getPagination().isHasPrev())
                     .build();
         } catch (RestClientException e) {
-            log.error("Error calling search service at {}: {}", searchServiceUrl, e.getMessage(), e);
+            log.error("Error calling search service at {}: {}", searchAndRecommendationServiceUrl, e.getMessage(), e);
             throw new AppException(ErrorCode.SYSTEM_INTERNAL_ERROR);
         }
     }
@@ -417,7 +414,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public List<JobResponse> getJobsRecommend(Long userId, int topK) {
         try {
-            StringBuilder urlBuilder = new StringBuilder(recommendServiceUrl);
+            StringBuilder urlBuilder = new StringBuilder(searchAndRecommendationServiceUrl);
             urlBuilder.append("?top_k=").append(topK);
 
             if (userId != null && userId != 0) {
@@ -452,7 +449,7 @@ public class JobServiceImpl implements JobService {
                     .toList();
 
         } catch (RestClientException e) {
-            log.error("Error calling recommendation service at {}: {}", recommendServiceUrl, e.getMessage(), e);
+            log.error("Error calling recommendation service at {}: {}", searchAndRecommendationServiceUrl, e.getMessage(), e);
             return List.of();
         } catch (Exception e) {
             log.error("Unexpected error in getJobsRecommend: {}", e.getMessage(), e);

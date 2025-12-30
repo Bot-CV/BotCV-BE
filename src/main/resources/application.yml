@@ -1,12 +1,14 @@
 spring:
   application:
     name: JobRecruitmentPlatform-Server
+  config:
+    import: optional:file:.env[.properties]
   flyway:
     enabled: true
   datasource:
     url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?stringtype=unspecified
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   data:
     redis:
@@ -49,16 +51,13 @@ spring:
             enable: true
   jackson:
     time-zone: Asia/Ho_Chi_Minh
-#  profiles:
-#    default: dev
 
 cloudinary:
   cloud-name: ${CLOUDINARY_NAME}
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
 app:
-  frontend-url: ${FRONTEND_URL:http://localhost:3000}
-  ner-service-url: ${NER_SERVICE_URL:http://localhost:8001}
-  search-service-url: ${SEARCH_SERVICE_URL:http://localhost:8000/search}
-  recommend-service-url: ${RECOMMENDATION_SERVICE_URL:http://localhost:8000/recommend}
-  default-avatar-public-id: ${DEFAULT_AVT_PUBLIC_ID:bot-cv/avatar/299c1e01-6d3c-462d-a49b-993f51b06cef}
+  frontend-url: ${FRONTEND_URL}
+  ner-service-url: ${NER_SERVICE_URL}
+  search-and-recommendation-service-url: ${SEARCH_AND_RECOMMENDATION_SERVICE_URL}
+  default-avatar-public-id: ${DEFAULT_AVT_PUBLIC_ID}
