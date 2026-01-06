@@ -2,6 +2,7 @@ package org.toanehihi.jobrecruitmentplatformserver.application.candidate.service
 
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -198,7 +199,7 @@ public class CandidateServiceImpl implements CandidateService {
                 savedJobPage.map(savedJobMapper::toResponse));
     }
 
-    @Override   
+    @Override
     public PageResult<ResourceResponse> getCandidateResumes(int page, int size, String sortBy, String sortDir) {
         Candidate candidate = getCurrentCandidate();
         Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
@@ -250,7 +251,12 @@ public class CandidateServiceImpl implements CandidateService {
 
         int years = cvData.getParsedYearsOfExperience();
         if (years > 0) {
-            candidate.setSeniority(calculateSeniority(years));
+            SeniorityLevel newLevel = calculateSeniority(years);
+            SeniorityLevel currentLevel = candidate.getSeniority();
+
+            if (currentLevel == null || newLevel.ordinal() > currentLevel.ordinal()) {
+                candidate.setSeniority(newLevel);
+            }
         } else if (candidate.getSeniority() == null) {
             candidate.setSeniority(SeniorityLevel.INTERN);
         }
@@ -259,8 +265,21 @@ public class CandidateServiceImpl implements CandidateService {
             updateCandidateSkills(candidate, cvData.getSkills());
         }
 
-        String newBio = buildBioFromCV(cvData);
-        candidate.setBio(newBio);
+        String extractedInfo = buildBioFromCV(cvData);
+        if (!extractedInfo.isEmpty()) {
+            String currentBio = candidate.getBio();
+
+            if (currentBio == null || currentBio.isBlank()) {
+                candidate.setBio(extractedInfo);
+            } else {
+                String normCurrent = currentBio.replaceAll("\\s+", "").toLowerCase();
+                String normNew = extractedInfo.replaceAll("\\s+", "").toLowerCase();
+                if (!normCurrent.contains(normNew)) {
+                    candidate.setBio(currentBio + "\n\n" + extractedInfo);
+                }
+            }
+        }
+
         candidateRepository.save(candidate);
     }
 
@@ -277,39 +296,51 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private void updateCandidateSkills(Candidate candidate, List<String> skillNames) {
-        for (String skillName : skillNames) {
-            Skill skill = skillRepository.findByName(skillName).orElseGet(
-                    () -> {
-                        Skill newSkill = new Skill();
-                        newSkill.setName(skillName);
-                        return skillRepository.save(newSkill);
-                    });
-            boolean alreadyHasSkill = candidate.getSkills().stream()
-                    .anyMatch(cs -> cs.getSkill().getId().equals(skill.getId()));
+        Set<String> existingSkillNames = candidate.getSkills().stream()
+                .map(cs -> cs.getSkill().getName().trim().toLowerCase())
+                .collect(Collectors.toSet());
 
-            if (!alreadyHasSkill) {
-                CandidateSkill candidateSkill = new CandidateSkill();
-                candidateSkill.setCandidate(candidate);
-                candidateSkill.setSkill(skill);
-                candidateSkill.setLevel(1);
-                candidate.getSkills().add(candidateSkill);
+        for (String rawName : skillNames) {
+            if (rawName != null && !rawName.isBlank()) {
+                String cleanName = rawName.trim();
+                String lowerCaseName = cleanName.toLowerCase();
+
+                if (!existingSkillNames.contains(lowerCaseName)) {
+                    Skill skill = skillRepository.findByNameIgnoreCase(cleanName)
+                            .orElseGet(() -> {
+                                Skill newSkill = new Skill();
+                                newSkill.setName(cleanName);
+                                newSkill.setDateCreated(OffsetDateTime.now());
+                                return skillRepository.save(newSkill);
+                            });
+
+                    CandidateSkill candidateSkill = new CandidateSkill();
+                    candidateSkill.setCandidate(candidate);
+                    candidateSkill.setSkill(skill);
+                    candidateSkill.setLevel(1);
+
+                    candidate.getSkills().add(candidateSkill);
+
+                    existingSkillNames.add(lowerCaseName);
+                }
             }
         }
-        candidateRepository.save(candidate);
     }
 
     private String buildBioFromCV(ResumeAnalysisResponse cv) {
-        StringBuilder bio = new StringBuilder();
-        if (cv.getJobTitles() != null && !cv.getJobTitles().isEmpty()) {
-            bio.append("Worked as: ").append(String.join(", ", cv.getJobTitles())).append("\n");
-        }
-        if (cv.getCompanies() != null && !cv.getCompanies().isEmpty()) {
-            bio.append("At companies: ").append(String.join(", ", cv.getCompanies())).append("\n");
-        }
-        if (cv.getUniversities() != null && !cv.getUniversities().isEmpty()) {
-            bio.append("Education: ").append(String.join(", ", cv.getUniversities())).append("\n");
-        }
+        StringBuilder sb = new StringBuilder();
 
-        return bio.toString();
+        appendIfPresent(sb, "Worked as: ", cv.getJobTitles());
+        appendIfPresent(sb, "At companies: ", cv.getCompanies());
+        appendIfPresent(sb, "Education: ", cv.getUniversities());
+
+        return sb.toString();
+    }
+
+    private void appendIfPresent(StringBuilder sb, String prefix, List<String> values) {
+        if (values != null && !values.isEmpty()) {
+            String content = String.join(", ", new HashSet<>(values));
+            sb.append(prefix).append(content).append(".\n");
+        }
     }
 }
