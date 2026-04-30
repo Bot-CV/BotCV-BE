@@ -1,42 +1,42 @@
-# 🚀 Job Recruitment Platform - Server
+# Job Recruitment Platform - Server
 
-Dịch vụ Backend cho nền tảng tuyển dụng việc làm, được xây dựng với Spring Boot 3 và Java 21.
+Backend service for a job recruitment platform, built with Spring Boot 3 and Java 21.
 
-## 📋 Tổng quan
+## Overview
 
-Đây là dịch vụ backend RESTful API cho nền tảng tuyển dụng việc làm, cung cấp các chức năng quản lý người dùng, việc làm, ứng viên và tích hợp với các dịch vụ AI/ML để gợi ý việc làm thông minh.
+A RESTful API backend for a job recruitment platform providing user management, job postings, candidate tracking, and AI/ML integration for intelligent job recommendations.
 
-## ✨ Tính năng
+## Features
 
-- 👤 **Quản lý người dùng**: Đăng ký, đăng nhập, phân quyền (Ứng viên/Nhà tuyển dụng/Admin)
-- 🔐 **Xác thực & Phân quyền**: JWT, OAuth2 (Google), Spring Security
-- 💼 **Quản lý việc làm**: CRUD việc làm, tìm kiếm, lọc theo tiêu chí
-- 📄 **Quản lý hồ sơ**: Upload/parse CV, trích xuất thông tin tự động
-- 🤖 **Tích hợp AI/ML**: 
-  - Gợi ý việc làm cá nhân hóa (Recommendation Service)
-  - Tìm kiếm ngữ nghĩa (Search Service)
-  - Trích xuất thông tin CV (Resume Extractor Service)
-- 📧 **Gửi email**: Thông báo, xác nhận tài khoản
-- 🖼️ **Lưu trữ media**: Tích hợp Cloudinary cho ảnh đại diện, CV
-- 🔄 **Caching**: Redis để tối ưu hiệu suất
+- **User Management**: Registration, login, role-based access (Candidate / Recruiter / Admin)
+- **Authentication & Authorization**: JWT, OAuth2 (Google), Spring Security
+- **Job Management**: CRUD operations, search, filtering by criteria
+- **Resume Management**: Upload/parse CVs, automatic information extraction
+- **AI/ML Integration**:
+  - Personalized job recommendations (Recommendation Service)
+  - Semantic search (Search Service)
+  - CV information extraction (Resume Extractor Service)
+- **Email Notifications**: Account verification, interview scheduling
+- **Media Storage**: Cloudinary integration for avatars and CVs
+- **Caching**: Redis for performance optimization
 
-## 🛠️ Công nghệ sử dụng
+## Tech Stack
 
-| Thành phần | Công nghệ |
-|------------|-----------|
+| Component | Technology |
+|-----------|------------|
 | **Framework** | Spring Boot 3.5.6 |
-| **Ngôn ngữ** | Java 21 |
+| **Language** | Java 21 |
 | **Database** | PostgreSQL 18 |
 | **Cache** | Redis 7.4 |
 | **ORM** | Spring Data JPA, Hibernate |
 | **Migration** | Flyway |
-| **Xác thực** | Spring Security, OAuth2, JWT |
+| **Auth** | Spring Security, OAuth2, JWT |
 | **Email** | Spring Mail |
 | **Cloud Storage** | Cloudinary |
 | **Build Tool** | Maven |
 | **Container** | Docker |
 
-## 📁 Cấu trúc dự án
+## Project Structure
 
 ```
 src/main/java/org/toanehihi/jobrecruitmentplatformserver/
@@ -46,15 +46,15 @@ src/main/java/org/toanehihi/jobrecruitmentplatformserver/
 └── interfaces/           # Controllers, REST endpoints
 ```
 
-Kiến trúc theo mô hình **Clean Architecture** với các tầng rõ ràng:
-- **Domain Layer**: Chứa business logic và entities
-- **Application Layer**: Xử lý use cases, DTOs
-- **Infrastructure Layer**: Cấu hình, tích hợp bên ngoài
+Clean Architecture with distinct layers:
+- **Domain Layer**: Business logic and entities
+- **Application Layer**: Use cases, DTOs
+- **Infrastructure Layer**: Configuration, external integrations
 - **Interfaces Layer**: REST Controllers, API endpoints
 
-## 🚀 Khởi chạy
+## Getting Started
 
-### Yêu cầu
+### Prerequisites
 
 - Java 21+
 - Maven 3.8+
@@ -62,126 +62,126 @@ Kiến trúc theo mô hình **Clean Architecture** với các tầng rõ ràng:
 - PostgreSQL 18+
 - Redis 7.4+
 
-### Sử dụng Docker Compose (Khuyến nghị)
+### Using Docker Compose (Recommended)
 
-1. **Clone repository**
+1. **Clone the repository**
    ```bash
    git clone <repository-url>
    cd Job-Recruitment-Platform-Server
    ```
 
-2. **Cấu hình biến môi trường**
+2. **Configure environment variables**
    ```bash
    cp .env.example .env
-   # Chỉnh sửa file .env với các thông tin cần thiết
+   # Edit .env with the required values
    ```
 
-3. **Khởi chạy services**
+3. **Start services**
    ```bash
    docker-compose up -d
    ```
 
-   Server sẽ chạy tại: `http://localhost:8080`
+   Server runs at: `http://localhost:8080`
 
-### Chạy local (Development)
+### Local Development
 
-1. **Đảm bảo PostgreSQL và Redis đang chạy**
+1. **Ensure PostgreSQL and Redis are running**
 
-2. **Cấu hình biến môi trường trong file `.env`**
+2. **Configure environment variables in `.env`**
 
-3. **Build và chạy**
+3. **Build and run**
    ```bash
    ./mvnw spring-boot:run
    ```
 
-## ⚙️ Biến môi trường
+## Environment Variables
 
-| Biến | Mô tả |
-|------|-------|
-| `POSTGRES_HOST` | Host của PostgreSQL |
-| `POSTGRES_PORT` | Port của PostgreSQL |
-| `POSTGRES_DB` | Tên database |
-| `POSTGRES_USERNAME` | Username database |
-| `POSTGRES_PASSWORD` | Password database |
-| `REDIS_HOST` | Host của Redis |
-| `REDIS_PORT` | Port của Redis |
-| `JWT_SECRET` | Secret key cho JWT |
+| Variable | Description |
+|----------|-------------|
+| `POSTGRES_HOST` | PostgreSQL host |
+| `POSTGRES_PORT` | PostgreSQL port |
+| `POSTGRES_DB` | Database name |
+| `POSTGRES_USERNAME` | Database username |
+| `POSTGRES_PASSWORD` | Database password |
+| `REDIS_HOST` | Redis host |
+| `REDIS_PORT` | Redis port |
+| `JWT_SECRET` | JWT secret key |
 | `CLIENT_ID` | Google OAuth2 Client ID |
 | `CLIENT_SECRET` | Google OAuth2 Client Secret |
-| `MAIL_USERNAME` | Email username (SMTP) |
-| `MAIL_PASSWORD` | Email password (App password) |
+| `MAIL_USERNAME` | SMTP email username |
+| `MAIL_PASSWORD` | SMTP email password (app password) |
 | `CLOUDINARY_NAME` | Cloudinary cloud name |
 | `CLOUDINARY_API_KEY` | Cloudinary API key |
 | `CLOUDINARY_API_SECRET` | Cloudinary API secret |
-| `FRONTEND_URL` | URL của Frontend |
-| `NER_SERVICE_URL` | URL của Resume Extractor Service |
-| `SEARCH_SERVICE_URL` | URL của Search Service |
-| `RECOMMENDATION_SERVICE_URL` | URL của Recommendation Service |
+| `FRONTEND_URL` | Frontend URL |
+| `NER_SERVICE_URL` | Resume Extractor Service URL |
+| `SEARCH_SERVICE_URL` | Search Service URL |
+| `RECOMMENDATION_SERVICE_URL` | Recommendation Service URL |
 
-## 📡 API Endpoints
+## API Endpoints
 
-### Xác thực
-- `POST /api/auth/register` - Đăng ký tài khoản
-- `POST /api/auth/login` - Đăng nhập
-- `POST /api/auth/google` - Đăng nhập bằng Google
+### Authentication
+- `POST /api/auth/register` - Register account
+- `POST /api/auth/login` - Login
+- `POST /api/auth/google` - Google login
 
-### Việc làm
-- `GET /api/jobs` - Danh sách việc làm
-- `GET /api/jobs/{id}` - Chi tiết việc làm
-- `POST /api/jobs` - Tạo việc làm mới
-- `PUT /api/jobs/{id}` - Cập nhật việc làm
-- `DELETE /api/jobs/{id}` - Xóa việc làm
+### Jobs
+- `GET /api/jobs` - List jobs
+- `GET /api/jobs/{id}` - Job details
+- `POST /api/jobs` - Create job
+- `PUT /api/jobs/{id}` - Update job
+- `DELETE /api/jobs/{id}` - Delete job
 
-### Ứng viên
-- `GET /api/candidates/profile` - Lấy hồ sơ
-- `PUT /api/candidates/profile` - Cập nhật hồ sơ
+### Candidates
+- `GET /api/candidates/profile` - Get profile
+- `PUT /api/candidates/profile` - Update profile
 - `POST /api/candidates/resume` - Upload CV
 
-### Gợi ý
-- `GET /api/recommendations` - Lấy gợi ý việc làm
+### Recommendations
+- `GET /api/recommendations` - Get job recommendations
 
 ### Health Check
-- `GET /actuator/health` - Kiểm tra trạng thái service
+- `GET /actuator/health` - Service health status
 
-## 🐳 Docker
+## Docker
 
 ### Build image
 ```bash
 docker build -t jrp-server:1.0 .
 ```
 
-### Chạy container
+### Run container
 ```bash
 docker run -p 8080:8080 --env-file .env jrp-server:1.0
 ```
 
-## 🏗️ Kiến trúc hệ thống
+## System Architecture
 
 ```
-┌─────────────────┐     ┌─────────────────┐
-│   Frontend      │────▶│   Backend API   │
-│   (Next.js)     │     │  (Spring Boot)  │
-└─────────────────┘     └────────┬────────┘
-                                 │
-                    ┌────────────┼────────────┐
-                    │            │            │
-              ┌─────▼─────┐ ┌────▼────┐ ┌─────▼─────┐
-              │   Resume  │ │  Search │ │ Recommend │
-              │ Extractor │ │ Service │ │  Service  │
-              └───────────┘ └─────────┘ └───────────┘
-                    │            │            │
-              ┌─────▼─────┐ ┌────▼────────────▼────┐
-              │   NER     │ │      Milvus          │
-              │   Model   │ │   (Vector DB)        │
-              └───────────┘ └──────────────────────┘
++------------------+     +------------------+
+|   Frontend       |---->|   Backend API    |
+|   (Next.js)      |     |  (Spring Boot)   |
++------------------+     +--------+---------+
+                                  |
+                     +------------+------------+
+                     |            |            |
+               +-----+------+ +--+------+ +---+-------+
+               |   Resume   | |  Search | | Recommend |
+               | Extractor  | | Service | |  Service  |
+               +-----+------+ +--+------+ +---+-------+
+                     |            |            |
+               +-----+------+ +--+------------+------+
+               |   NER      | |      Milvus          |
+               |   Model    | |   (Vector DB)        |
+               +------------+ +-----------------------+
 ```
 
-## 📝 Ghi chú phát triển
+## Development Notes
 
-- Sử dụng Flyway để quản lý database migration
-- Tích hợp Spring Actuator để monitoring
-- Hỗ trợ hot-reload với Spring DevTools trong môi trường development
+- Flyway manages database migrations
+- Spring Actuator is integrated for monitoring
+- Hot-reload supported via Spring DevTools in development
 
-## 📄 License
+## License
 
-Dự án được phát triển cho mục đích học tập và nghiên cứu.
+Developed for educational and research purposes.
