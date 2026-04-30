@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.toanehihi.jobrecruitmentplatformserver.application.company.service.CompanyService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.CurrentUser;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.DataResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyResponse;
@@ -29,6 +30,7 @@ public class CompanyController {
     }
 
     @GetMapping("/verify")
+    @HasAdminRole
     DataResponse<PageResult<CompanyResponse>> getVerifyList(
             @CurrentUser Account account,
             @RequestParam(defaultValue = "1") int page,
@@ -41,6 +43,7 @@ public class CompanyController {
     }
 
     @GetMapping("/{companyId}/attestations")
+    @HasAdminRole
     DataResponse<List<ResourceResponse>> getCompanyAttestations(@CurrentUser Account account,
             @PathVariable Long companyId) {
         return DataResponse.<List<ResourceResponse>>builder()
@@ -49,6 +52,7 @@ public class CompanyController {
     }
 
     @PatchMapping("/verify")
+    @HasAdminRole
     DataResponse<VerifyCompanyResponse> verifyAttestation(@CurrentUser Account account,
             @RequestBody VerifyCompanyRequest request) {
         return DataResponse.<VerifyCompanyResponse>builder()

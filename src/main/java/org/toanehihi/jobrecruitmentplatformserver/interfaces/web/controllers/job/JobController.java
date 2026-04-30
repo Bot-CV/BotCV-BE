@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import org.toanehihi.jobrecruitmentplatformserver.application.job.service.JobService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.CurrentUser;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.DataResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.*;
@@ -39,6 +41,7 @@ public class JobController {
     }
 
     @PostMapping
+    @HasRecruiterRole
     public DataResponse<JobResponse> createJob(@CurrentUser Account account, @RequestBody CreateJobRequest request) {
         return DataResponse.<JobResponse>builder()
                 .data(jobService.createJob(account, request))
@@ -61,6 +64,7 @@ public class JobController {
     }
 
     @PatchMapping("/{jobId}/moderate")
+    @HasAdminRole
     public DataResponse<JobResponse> moderateJobPosting(@CurrentUser Account account, @PathVariable Long jobId,
             @RequestParam String action) {
         return DataResponse.<JobResponse>builder()

@@ -18,7 +18,6 @@ import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.map
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.resource.ResourceMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.AttestationResourceRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.CompanyRepository;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.CompanyResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.company.VerifyCompanyRequest;
@@ -38,15 +37,9 @@ public class CompanyServiceImpl implements CompanyService {
     private final CloudStorageService cloudStorageService;
     private final EmailService emailService;
 
-    private static final String ADMIN = "ADMIN";
-
     @Override
-    @HasAdminRole
     @Transactional
     public VerifyCompanyResponse verifyAttestation(Account account, VerifyCompanyRequest request) {
-        if (!account.getRole().getName().equals(ADMIN)) {
-            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
-        }
         Company company = companyRepository.findById(request.getCompanyId())
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
         if (!request.isApproved()) {
@@ -72,12 +65,8 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @HasAdminRole
     public PageResult<CompanyResponse> getVerifyList(Account account, int page, int size, String sortBy,
             String sortDir) {
-        if (!account.getRole().getName().equals(ADMIN)) {
-            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
-        }
         Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
         Pageable pageable = PageRequest.of(page - 1, size, sort);
         Page<Company> unverifiedCompaniesPage = companyRepository.findAllUnverifiedCompanies(pageable);
@@ -93,11 +82,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    @HasAdminRole
     public List<ResourceResponse> getCompanyAttestations(Account account, Long companyId) {
-        if (!account.getRole().getName().equals(ADMIN)) {
-            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
-        }
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new AppException(ErrorCode.COMPANY_NOT_FOUND));
 

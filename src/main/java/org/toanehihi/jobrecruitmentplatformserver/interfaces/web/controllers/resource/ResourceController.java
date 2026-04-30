@@ -7,6 +7,7 @@ import org.toanehihi.jobrecruitmentplatformserver.application.cloud.service.Clou
 import org.toanehihi.jobrecruitmentplatformserver.application.resource.ResourceService;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.CurrentUser;
+import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.DataResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.FileData;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
@@ -46,6 +47,7 @@ public class ResourceController {
 	}
 
 	@PostMapping("/company/attestations")
+	@HasRecruiterRole
 	DataResponse<List<ResourceResponse>> uploadAttestation(@CurrentUser Account account,
 			@RequestParam("files") List<MultipartFile> files) {
 		return DataResponse.<List<ResourceResponse>>builder()

@@ -26,8 +26,6 @@ import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.SeniorityLe
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.WorkMode;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.job.JobMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.*;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasAdminRole;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.PageResult;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.job.*;
 
@@ -82,7 +80,6 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
-    @HasRecruiterRole
     public JobResponse createJob(Account account, CreateJobRequest request) {
         Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
@@ -295,12 +292,7 @@ public class JobServiceImpl implements JobService {
 
     @Override
     @Transactional
-    @HasAdminRole
     public JobResponse moderateJobPosting(Account account, Long id, String action) {
-        if (!account.getRole().getName().equals("ADMIN")) {
-            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
-        }
-
         action = action.toUpperCase();
 
         if (!action.equals("APPROVE") && !action.equals("REJECT")) {

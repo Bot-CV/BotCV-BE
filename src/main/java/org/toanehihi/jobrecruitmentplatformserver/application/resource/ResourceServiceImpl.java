@@ -27,7 +27,6 @@ import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.rep
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.CompanyRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.RecruiterRepository;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.ResourceRepository;
-import org.toanehihi.jobrecruitmentplatformserver.interfaces.annotation.HasRecruiterRole;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.FileData;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResourceResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.resource.ResumeAnalysisResponse;
@@ -159,13 +158,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    @HasRecruiterRole
     @Transactional
     public List<ResourceResponse> uploadAttestation(Account account, List<MultipartFile> files) {
-        if (!account.getRole().getName().equals("RECRUITER")) {
-            throw new AppException(ErrorCode.ACCESS_FORBIDDEN);
-        }
-
         Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
 
