@@ -20,6 +20,7 @@ import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.AuthProvide
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.ResourceType;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.mappers.account.AccountMapper;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.*;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.security.AccountUserDetails;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.account.AccountResponse;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.account.CandidateAccountRequest;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.account.RecruiterAccountRequest;
@@ -137,7 +138,8 @@ public class AuthServiceImpl implements AuthService {
         try {
             Authentication authentication = authenticationManager
                     .authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            Account account = (Account) authentication.getPrincipal();
+            AccountUserDetails userDetails = (AccountUserDetails) authentication.getPrincipal();
+            Account account = userDetails.getAccount();
             if (account.getStatus() == AccountStatus.SUSPENDED) {
                 throw new AppException(ErrorCode.AUTH_ACCOUNT_SUSPENDED);
             }

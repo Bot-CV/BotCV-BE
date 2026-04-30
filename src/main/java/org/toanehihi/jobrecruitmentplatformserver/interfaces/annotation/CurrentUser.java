@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@AuthenticationPrincipal
+@AuthenticationPrincipal(expression = "account")
 @NotNull(message = "Unauthorized request")
 public @interface CurrentUser {
 }

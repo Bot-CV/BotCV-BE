@@ -16,7 +16,12 @@ public class CurrentAccountProvider {
             throw new AppException(ErrorCode.AUTH_UNAUTHENTICATED);
         }
 
-        return (Account) authentication.getPrincipal();
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof AccountUserDetails userDetails) {
+            return userDetails.getAccount();
+        }
+
+        throw new AppException(ErrorCode.AUTH_UNAUTHENTICATED);
     }
 
     public Long getCurrentAccountId() {

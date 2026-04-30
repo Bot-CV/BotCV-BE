@@ -6,7 +6,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.AppException;
 import org.toanehihi.jobrecruitmentplatformserver.domain.exception.ErrorCode;
+import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
 import org.toanehihi.jobrecruitmentplatformserver.infrastructure.persistence.repositories.AccountRepository;
+import org.toanehihi.jobrecruitmentplatformserver.infrastructure.security.AccountUserDetails;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +19,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return accountRepository.findByEmail(email)
+        Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        return new AccountUserDetails(account);
     }
 }

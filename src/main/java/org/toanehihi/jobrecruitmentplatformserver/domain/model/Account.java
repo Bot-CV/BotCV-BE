@@ -4,15 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.AccountStatus;
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.enums.AuthProvider;
 
 import java.time.OffsetDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Getter
 @Setter
@@ -22,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "accounts")
-public class Account implements UserDetails {
+public class Account {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,39 +52,4 @@ public class Account implements UserDetails {
 	@UpdateTimestamp
 	@Column(name = "date_updated", nullable = false)
 	private OffsetDateTime dateUpdated;
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return List.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-	}
-
-	@Override
-	public String getUsername() {
-		return email;
-	}
-
-	@Override
-	public String getPassword() {
-		return password;
-	}
-
-	@Override
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isAccountNonLocked() {
-		return status != AccountStatus.SUSPENDED;
-	}
-
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	public boolean isEnabled() {
-		return status == AccountStatus.ACTIVE;
-	}
 }

@@ -1,4 +1,3 @@
-
 package org.toanehihi.jobrecruitmentplatformserver.infrastructure.security;
 
 import java.util.Collection;
@@ -34,12 +33,11 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        Collection<? extends GrantedAuthority> authorities = account.getAuthorities();
+        AccountUserDetails userDetails = new AccountUserDetails(account);
+        Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
 
         log.info("Authenticated account: {} with authorities: {}", email, authorities);
 
-
-        return new UsernamePasswordAuthenticationToken(account, jwt, authorities);
+        return new UsernamePasswordAuthenticationToken(userDetails, jwt, authorities);
     }
-
 }
