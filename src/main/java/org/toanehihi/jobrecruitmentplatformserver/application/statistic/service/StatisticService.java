@@ -1,4 +1,4 @@
-package org.toanehihi.jobrecruitmentplatformserver.application.statistic;
+package org.toanehihi.jobrecruitmentplatformserver.application.statistic.service;
 
 import org.toanehihi.jobrecruitmentplatformserver.domain.model.Account;
 import org.toanehihi.jobrecruitmentplatformserver.interfaces.web.dtos.statistic.AdminStatisticResponse;

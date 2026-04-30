@@ -1,4 +1,4 @@
-package org.toanehihi.jobrecruitmentplatformserver.application.resource;
+package org.toanehihi.jobrecruitmentplatformserver.application.resource.service;
 
 import lombok.RequiredArgsConstructor;
 

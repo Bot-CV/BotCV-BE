@@ -1,4 +1,4 @@
-package org.toanehihi.jobrecruitmentplatformserver.application.resource;
+package org.toanehihi.jobrecruitmentplatformserver.application.resource.service;
 
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,4 +1,4 @@
-package org.toanehihi.jobrecruitmentplatformserver.application.statistic;
+package org.toanehihi.jobrecruitmentplatformserver.application.statistic.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
