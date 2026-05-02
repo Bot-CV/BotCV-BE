@@ -53,7 +53,6 @@ public enum ErrorCode {
 
     // Job (1501 - 1600)
     JOB_NOT_FOUND(1501, "Job not found", HttpStatus.NOT_FOUND),
-    JOB_ROLE_NOT_FOUND(1502, "Job role not found", HttpStatus.NOT_FOUND),
     JOB_CLOSED_CANNOT_UPDATE(1503, "Job is closed, cannot update", HttpStatus.BAD_REQUEST),
     JOB_HAS_APPLICANTS_CANNOT_UPDATE(1504, "Job has applicants, cannot update", HttpStatus.BAD_REQUEST),
     JOB_EXPIRED_CANNOT_APPLY(1505, "Job is expired, cannot apply", HttpStatus.BAD_REQUEST),
@@ -88,7 +87,6 @@ public enum ErrorCode {
     RESOURCE_TYPE_MISMATCH(9652, "Resource type mismatch", HttpStatus.BAD_REQUEST),
     RESOURCE_UPLOAD_FAILED(9653, "Resource upload failed", HttpStatus.INTERNAL_SERVER_ERROR),
     RESOURCE_DOWNLOAD_FAILED(9654, "Resource download failed", HttpStatus.INTERNAL_SERVER_ERROR),
-    RESOURCE_ATTESTATION_HAS_BEEN_SENT(9655, "Your company's attestations has been sent", HttpStatus.FORBIDDEN),
     RESOURCE_TYPE_NOT_ALLOWED(9656, "Resource type not allow", HttpStatus.FORBIDDEN),
 
     // Database constraint violations(9701 - 9800)

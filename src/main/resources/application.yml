@@ -58,6 +58,8 @@ cloudinary:
   api-key: ${CLOUDINARY_API_KEY}
   api-secret: ${CLOUDINARY_API_SECRET}
 app:
+  cloudinary:
+    base-url: ${CLOUDINARY_BASE_URL:https://res.cloudinary.com}
   frontend-url: ${FRONTEND_URL}
   ner-service-url: ${NER_SERVICE_URL}
   search-service-url: ${SEARCH_SERVICE_URL}
