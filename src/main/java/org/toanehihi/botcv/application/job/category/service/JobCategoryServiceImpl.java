@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.toanehihi.botcv.domain.exception.AppException;
 import org.toanehihi.botcv.domain.exception.ErrorCode;
 import org.toanehihi.botcv.domain.model.JobCategory;
+import org.toanehihi.botcv.infrastructure.persistence.mappers.job.JobCategoryMapper;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.JobCategoryRepository;
 import org.toanehihi.botcv.interfaces.web.dtos.PageResult;
 import org.toanehihi.botcv.interfaces.web.dtos.job.category.CreateCategoryRequest;
+import org.toanehihi.botcv.interfaces.web.dtos.job.category.JobCategoryResponse;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,18 +23,19 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class JobCategoryServiceImpl implements JobCategoryService {
     private final JobCategoryRepository jobCategoryRepository;
+    private final JobCategoryMapper jobCategoryMapper;
 
     @Override
-    public PageResult<JobCategory> getCategories(int page, int size, String sortBy, String sortDir) {
+    public PageResult<JobCategoryResponse> getCategories(int page, int size, String sortBy, String sortDir) {
         Sort.Direction direction = sortDir.equals("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        return PageResult.from(jobCategoryRepository.findAll(pageable));
+        return PageResult.from(jobCategoryRepository.findAll(pageable).map(jobCategoryMapper::toResponse));
     }
 
     @Override
     @Transactional
-    public JobCategory createCategory(Long parentId, CreateCategoryRequest request) {
+    public JobCategoryResponse createCategory(Long parentId, CreateCategoryRequest request) {
         JobCategory.JobCategoryBuilder builder = JobCategory.builder()
                 .name(request.getName())
                 .slug(request.getName().toLowerCase().replace(" ", "-"));
@@ -43,16 +46,20 @@ public class JobCategoryServiceImpl implements JobCategoryService {
             builder.parent(parent);
         }
 
-        return jobCategoryRepository.save(builder.build());
+        return jobCategoryMapper.toResponse(jobCategoryRepository.save(builder.build()));
     }
 
     @Override
-    public List<JobCategory> getRootCategories() {
-        return jobCategoryRepository.findByParentIsNull();
+    public List<JobCategoryResponse> getRootCategories() {
+        return jobCategoryRepository.findByParentIsNull().stream()
+                .map(jobCategoryMapper::toResponse)
+                .toList();
     }
 
     @Override
-    public List<JobCategory> getChildCategories(Long parentId) {
-        return jobCategoryRepository.findByParentId(parentId);
+    public List<JobCategoryResponse> getChildCategories(Long parentId) {
+        return jobCategoryRepository.findByParentId(parentId).stream()
+                .map(jobCategoryMapper::toResponse)
+                .toList();
     }
 }

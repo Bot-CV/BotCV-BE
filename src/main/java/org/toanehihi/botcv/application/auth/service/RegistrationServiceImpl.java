@@ -1,14 +1,18 @@
 package org.toanehihi.botcv.application.auth.service;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.toanehihi.botcv.application.account.service.AccountService;
 import org.toanehihi.botcv.application.candidate.service.CandidateService;
 import org.toanehihi.botcv.application.company.service.CompanyService;
+import org.toanehihi.botcv.application.email.service.EmailService;
 import org.toanehihi.botcv.application.recruiter.service.RecruiterService;
 import org.toanehihi.botcv.application.resource.service.ResourceService;
 import org.toanehihi.botcv.application.role.service.RoleService;
+import org.toanehihi.botcv.application.token.service.TokenService;
 import org.toanehihi.botcv.domain.exception.AppException;
 import org.toanehihi.botcv.domain.exception.ErrorCode;
 import org.toanehihi.botcv.domain.model.*;
@@ -30,6 +34,8 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final RecruiterService recruiterService;
     private final CompanyService companyService;
     private final ResourceService resourceService;
+    private final TokenService tokenService;
+    private final EmailService emailService;
 
     @Value("${app.default-avatar-public-id}")
     private String defaultAvatarPublicId;
@@ -48,11 +54,13 @@ public class RegistrationServiceImpl implements RegistrationService {
         newAccount.setRole(role);
         Account savedAccount = accountService.save(newAccount);
 
-        candidateService.createCandidate(Candidate.builder()
+        candidateService.save(Candidate.builder()
                 .account(savedAccount)
                 .fullName(request.getFullName())
                 .avatar(getDefaultAvatar())
                 .build());
+
+        sendVerificationEmail(savedAccount.getEmail());
 
         return accountMapper.toResponse(savedAccount);
     }
@@ -80,10 +88,18 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .company(company)
                 .build());
 
+        sendVerificationEmail(savedAccount.getEmail());
+
         return accountMapper.toResponse(savedAccount);
     }
 
     private Resource getDefaultAvatar() {
         return resourceService.findByPublicId(defaultAvatarPublicId).orElse(null);
+    }
+
+    private void sendVerificationEmail(String email) {
+        String token = UUID.randomUUID().toString();
+        tokenService.storeVerificationToken(token, email);
+        emailService.sendVerificationEmail(email, token);
     }
 }

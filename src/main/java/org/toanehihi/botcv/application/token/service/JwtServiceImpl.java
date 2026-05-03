@@ -1,5 +1,6 @@
 package org.toanehihi.botcv.application.token.service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class JwtServiceImpl implements JwtService {
     public boolean validateToken(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(secretKey.getBytes());
+            JWSVerifier verifier = new MACVerifier(secretKey.getBytes(StandardCharsets.UTF_8));
             boolean verified = signedJWT.verify(verifier);
             if (!verified) {
                 return false;

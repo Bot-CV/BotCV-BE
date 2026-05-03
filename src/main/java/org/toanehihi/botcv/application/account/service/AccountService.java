@@ -9,9 +9,6 @@ import org.toanehihi.botcv.interfaces.web.dtos.account.ResetPasswordRequest;
 import java.util.Optional;
 
 public interface AccountService {
-
-    Optional<Account> findByEmail(String email);
-
     Account findByEmailOrThrow(String email);
 
     boolean existsByEmail(String email);

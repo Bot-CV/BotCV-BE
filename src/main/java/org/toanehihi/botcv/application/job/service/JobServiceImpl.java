@@ -352,9 +352,22 @@ public class JobServiceImpl implements JobService {
                     .hasPrevious(response.getPagination().isHasPrev())
                     .build();
         } catch (RestClientException e) {
-            log.error("Error calling search service at {}: {}", searchServiceUrl, e.getMessage(), e);
-            throw new AppException(ErrorCode.SYSTEM_INTERNAL_ERROR);
+            log.warn("Search service unavailable, falling back to database search: {}", e.getMessage());
+            return fallbackSearchByTitle(request);
         }
+    }
+
+    private PageResult<JobResponse> fallbackSearchByTitle(JobSearchRequest request) {
+        int page = request.getOffset() / Math.max(request.getLimit(), 1);
+        Pageable pageable = PageRequest.of(page, request.getLimit(), Sort.by(Sort.Direction.DESC, "datePosted"));
+
+        Page<Job> jobPage = jobRepository.searchByTitle(
+                request.getQuery(),
+                JobStatus.PUBLISHED,
+                pageable
+        );
+
+        return PageResult.from(jobPage.map(jobMapper::toResponse));
     }
 
     @Override

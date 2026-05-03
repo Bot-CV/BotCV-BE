@@ -59,10 +59,16 @@ public class SecurityConfig {
     String[] publicEndpoints = {
             "/api/auth/**",
 
+            // Account (verification & password reset — must be accessible without login)
+            "/api/accounts/verify",
+            "/api/accounts/resend-verification",
+            "/api/accounts/forgot-password",
+            "/api/accounts/reset-password",
+
             // Jobs
             "/api/jobs/public/**",
             "/api/jobs/public/detail/**",
-            "/api/jobs/categories/public/**",
+            "/api/jobs/categories/**",
             "/api/jobs/public/search",
 
             // Companies

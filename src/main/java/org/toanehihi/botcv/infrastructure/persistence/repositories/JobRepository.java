@@ -66,4 +66,16 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             @Param("limit") int limit,
             @Param("recentDays") int recentDays
     );
+
+    @Query("""
+            SELECT j FROM Job j
+            WHERE j.status = :status
+            AND LOWER(j.title) LIKE LOWER(CONCAT('%', :query, '%'))
+            ORDER BY j.datePosted DESC
+            """)
+    Page<Job> searchByTitle(
+            @Param("query") String query,
+            @Param("status") JobStatus status,
+            Pageable pageable
+    );
 }

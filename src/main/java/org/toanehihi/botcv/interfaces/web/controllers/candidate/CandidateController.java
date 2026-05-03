@@ -19,7 +19,7 @@ import org.toanehihi.botcv.interfaces.web.dtos.candidate.UserProfileBasedRespons
 import org.toanehihi.botcv.interfaces.web.dtos.job.SavedJobResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.job.application.JobApplicationResponse;
 import lombok.RequiredArgsConstructor;
-import org.toanehihi.botcv.interfaces.web.dtos.resource.ResourceResponse;
+import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateResumeResponse;
 
 @RestController
 @RequestMapping("api/candidates")
@@ -87,12 +87,12 @@ public class CandidateController {
     }
 
     @GetMapping("/resumes")
-    DataResponse<PageResult<ResourceResponse>> getCandidateResumes(
+    DataResponse<PageResult<CandidateResumeResponse>> getCandidateResumes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "uploadedAt") String sortBy,
+            @RequestParam(defaultValue = "dateCreated") String sortBy,
             @RequestParam(defaultValue = "desc") String sortDir) {
-        return DataResponse.<PageResult<ResourceResponse>>builder()
+        return DataResponse.<PageResult<CandidateResumeResponse>>builder()
                 .data(candidateService.getCandidateResumes(page, size, sortBy, sortDir))
                 .build();
     }

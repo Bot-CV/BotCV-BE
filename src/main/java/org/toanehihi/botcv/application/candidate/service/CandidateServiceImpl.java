@@ -30,7 +30,9 @@ import org.toanehihi.botcv.infrastructure.persistence.mappers.candidate.Candidat
 import org.toanehihi.botcv.infrastructure.persistence.mappers.job.JobApplicationMapper;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.job.SavedJobMapper;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.location.LocationMapper;
+import org.toanehihi.botcv.infrastructure.persistence.mappers.resource.ResourceMapper;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.CandidateRepository;
+import org.toanehihi.botcv.infrastructure.persistence.repositories.CandidateResumeRepository;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.JobApplicationRepository;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.JobRepository;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.LocationRepository;
@@ -39,6 +41,7 @@ import org.toanehihi.botcv.infrastructure.persistence.repositories.SavedJobRepos
 import org.toanehihi.botcv.infrastructure.persistence.repositories.SkillRepository;
 import org.toanehihi.botcv.infrastructure.security.CurrentAccountProvider;
 import org.toanehihi.botcv.interfaces.web.dtos.PageResult;
+import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateResumeResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.UserProfileBasedResponse;
@@ -58,6 +61,7 @@ import lombok.RequiredArgsConstructor;
 public class CandidateServiceImpl implements CandidateService {
 
     private final CandidateRepository candidateRepository;
+    private final CandidateResumeRepository candidateResumeRepository;
     private final LocationRepository locationRepository;
     private final SkillRepository skillRepository;
     private final JobRepository jobRepository;
@@ -68,13 +72,14 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateMapper candidateMapper;
     private final SavedJobMapper savedJobMapper;
     private final JobApplicationMapper jobApplicationMapper;
+    private final ResourceMapper resourceMapper;
     private final CurrentAccountProvider currentAccountProvider;
     private final CloudStorageService cloudStorageService;
 
     @Override
     @Transactional
-    public Candidate createCandidate(Candidate candidate) {
-        return candidateRepository.save(candidate);
+    public void save(Candidate candidate) {
+        candidateRepository.save(candidate);
     }
 
     @Override
@@ -203,8 +208,19 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public PageResult<ResourceResponse> getCandidateResumes(int page, int size, String sortBy, String sortDir) {
-        throw new UnsupportedOperationException("getCandidateResumes not yet implemented");
+    public PageResult<CandidateResumeResponse> getCandidateResumes(int page, int size, String sortBy, String sortDir) {
+        Candidate candidate = getCurrentCandidate();
+        Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<CandidateResumeResponse> resumePage = candidateResumeRepository
+                .findByCandidateId(candidate.getId(), pageable)
+                .map(resume -> CandidateResumeResponse.builder()
+                        .id(resume.getId())
+                        .title(resume.getTitle())
+                        .resource(resourceMapper.toResponse(resume.getResource()))
+                        .dateCreated(resume.getDateCreated())
+                        .build());
+        return PageResult.from(resumePage);
     }
 
     @Override

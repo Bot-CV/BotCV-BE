@@ -37,7 +37,7 @@ public class JobCategory {
     @Builder.Default
     private boolean leaf = false;
 
-    @OneToMany(mappedBy = "parent")
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
     @Builder.Default
     private Set<JobCategory> children = new HashSet<>();
 }

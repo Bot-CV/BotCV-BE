@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import org.toanehihi.botcv.domain.model.Candidate;
+import org.toanehihi.botcv.interfaces.web.dtos.PageResult;
 
 @Repository
 public interface CandidateRepository extends JpaRepository<Candidate, Long> {

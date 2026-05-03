@@ -1,9 +1,7 @@
 package org.toanehihi.botcv.application.account.service;
 
-import java.time.OffsetDateTime;
-import java.util.Optional;
-import java.util.UUID;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +15,9 @@ import org.toanehihi.botcv.infrastructure.persistence.repositories.AccountReposi
 import org.toanehihi.botcv.interfaces.web.dtos.account.ForgotPasswordRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.account.ResendVerificationRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.account.ResetPasswordRequest;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +28,6 @@ public class AccountServiceImpl implements AccountService {
     private final TokenService tokenService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-
-    @Override
-    public Optional<Account> findByEmail(String email) {
-        return accountRepository.findByEmail(email);
-    }
 
     @Override
     public Account findByEmailOrThrow(String email) {

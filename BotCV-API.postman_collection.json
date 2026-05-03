@@ -1,0 +1,463 @@
+{
+  "info": {
+    "name": "BotCV API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "BotCV - Job Recruitment Platform API Collection"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Candidate",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguyen Van A\",\n  \"email\": \"candidate@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register/candidate", "host": ["{{baseUrl}}"], "path": ["api","auth","register","candidate"] }
+          }
+        },
+        {
+          "name": "Register Recruiter",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"recruiter@example.com\",\n  \"password\": \"password123\",\n  \"fullName\": \"Tran Thi B\",\n  \"phone\": \"0901234567\",\n  \"companyName\": \"Tech Corp\",\n  \"provinceCity\": \"Ho Chi Minh\",\n  \"ward\": \"Phu My Hung\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/register/recruiter", "host": ["{{baseUrl}}"], "path": ["api","auth","register","recruiter"] }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["var jsonData = pm.response.json();","if (jsonData.data && jsonData.data.accessToken) { pm.collectionVariables.set('accessToken', jsonData.data.accessToken); }","if (jsonData.data && jsonData.data.refreshToken) { pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken); }"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"candidate@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          }
+        },
+        {
+          "name": "Login with Google",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["var jsonData = pm.response.json();","if (jsonData.data && jsonData.data.accessToken) { pm.collectionVariables.set('accessToken', jsonData.data.accessToken); }","if (jsonData.data && jsonData.data.refreshToken) { pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken); }"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"idToken\": \"google-id-token-here\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/login/google", "host": ["{{baseUrl}}"], "path": ["api","auth","login","google"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["var jsonData = pm.response.json();","if (jsonData.data && jsonData.data.accessToken) { pm.collectionVariables.set('accessToken', jsonData.data.accessToken); }","if (jsonData.data && jsonData.data.refreshToken) { pm.collectionVariables.set('refreshToken', jsonData.data.refreshToken); }"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api","auth","refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/auth/logout", "host": ["{{baseUrl}}"], "path": ["api","auth","logout"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Account",
+      "item": [
+        {
+          "name": "Verify Email",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/accounts/verify?token=your-verification-token", "host": ["{{baseUrl}}"], "path": ["api","accounts","verify"], "query": [{ "key": "token", "value": "your-verification-token" }] }
+          }
+        },
+        {
+          "name": "Resend Verification Email",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"candidate@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/accounts/resend-verification", "host": ["{{baseUrl}}"], "path": ["api","accounts","resend-verification"] }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"candidate@example.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/accounts/forgot-password", "host": ["{{baseUrl}}"], "path": ["api","accounts","forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"your-reset-token\",\n  \"newPassword\": \"newpassword123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/accounts/reset-password", "host": ["{{baseUrl}}"], "path": ["api","accounts","reset-password"] }
+          }
+        },
+        {
+          "name": "Change Account Status",
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{baseUrl}}/api/accounts/1/status/ACTIVE", "host": ["{{baseUrl}}"], "path": ["api","accounts","1","status","ACTIVE"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Candidate",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/candidates/profile", "host": ["{{baseUrl}}"], "path": ["api","candidates","profile"] } }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Nguyen Van A\",\n  \"phone\": \"0901234567\",\n  \"email\": \"candidate@example.com\",\n  \"location\": {\n    \"streetAddress\": \"123 Nguyen Hue\",\n    \"ward\": \"Ben Nghe\",\n    \"district\": \"Quan 1\",\n    \"provinceCity\": \"Ho Chi Minh\",\n    \"country\": \"Vietnam\"\n  },\n  \"experienceYears\": \"TWO_YEARS\",\n  \"salaryExpect\": 1500,\n  \"currency\": \"USD\",\n  \"remotePref\": true,\n  \"relocationPref\": false,\n  \"bio\": \"Software developer with 2 years experience\",\n  \"skills\": [\n    { \"skillName\": \"Java\" },\n    { \"skillName\": \"Spring Boot\" }\n  ]\n}" },
+            "url": { "raw": "{{baseUrl}}/api/candidates/profile", "host": ["{{baseUrl}}"], "path": ["api","candidates","profile"] }
+          }
+        },
+        {
+          "name": "Save Job",
+          "request": { "method": "POST", "url": { "raw": "{{baseUrl}}/api/candidates/save/1", "host": ["{{baseUrl}}"], "path": ["api","candidates","save","1"] } }
+        },
+        {
+          "name": "Remove Saved Job",
+          "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/api/candidates/save/1", "host": ["{{baseUrl}}"], "path": ["api","candidates","save","1"] } }
+        },
+        {
+          "name": "Apply Job",
+          "request": {
+            "method": "POST",
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+            "url": { "raw": "{{baseUrl}}/api/candidates/applications/1", "host": ["{{baseUrl}}"], "path": ["api","candidates","applications","1"] }
+          }
+        },
+        {
+          "name": "Get All Applications",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/candidates/applications?page=0&size=10&sortBy=appliedAt&sortDir=desc", "host": ["{{baseUrl}}"], "path": ["api","candidates","applications"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "appliedAt" },{ "key": "sortDir", "value": "desc" }] }
+          }
+        },
+        {
+          "name": "Get All Saved Jobs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/candidates/saved-jobs?page=0&size=10&sortBy=savedAt&sortDir=desc", "host": ["{{baseUrl}}"], "path": ["api","candidates","saved-jobs"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "savedAt" },{ "key": "sortDir", "value": "desc" }] }
+          }
+        },
+        {
+          "name": "Get Candidate Resumes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/candidates/resumes?page=0&size=10&sortBy=dateCreated&sortDir=desc", "host": ["{{baseUrl}}"], "path": ["api","candidates","resumes"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "dateCreated" },{ "key": "sortDir", "value": "desc" }] }
+          }
+        },
+        {
+          "name": "Get User Profile Based Data",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/candidates/profile/1", "host": ["{{baseUrl}}"], "path": ["api","candidates","profile","1"] } }
+        }
+      ]
+    },
+    {
+      "name": "Recruiter",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/recruiters/profile", "host": ["{{baseUrl}}"], "path": ["api","recruiters","profile"] } }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Tran Thi B\",\n  \"phone\": \"0901234567\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/recruiters/profile", "host": ["{{baseUrl}}"], "path": ["api","recruiters","profile"] }
+          }
+        },
+        {
+          "name": "Update Company",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Tech Corp\",\n  \"website\": \"https://techcorp.com\",\n  \"size\": \"50-100\",\n  \"description\": \"A leading tech company\",\n  \"phone\": \"0281234567\",\n  \"email\": \"info@techcorp.com\",\n  \"industry\": \"Technology\",\n  \"companyLocations\": [\n    {\n      \"location\": {\n        \"streetAddress\": \"456 Le Loi\",\n        \"ward\": \"Ben Thanh\",\n        \"district\": \"Quan 1\",\n        \"provinceCity\": \"Ho Chi Minh\",\n        \"country\": \"Vietnam\"\n      },\n      \"isHeadquarter\": true\n    }\n  ]\n}" },
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company"] }
+          }
+        },
+        {
+          "name": "Get Company Jobs",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company/jobs?jobStatus=PUBLISHED&page=0&size=10&sortBy=datePosted&sortDir=DESC", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company","jobs"], "query": [{ "key": "jobStatus", "value": "PUBLISHED" },{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "datePosted" },{ "key": "sortDir", "value": "DESC" }] }
+          }
+        },
+        {
+          "name": "Get Job Applicants",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company/1/applicants?page=0&size=10&sortBy=appliedAt&sortDir=DESC", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company","1","applicants"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "appliedAt" },{ "key": "sortDir", "value": "DESC" }] }
+          }
+        },
+        {
+          "name": "Process Candidate",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company/applicants/1?action=REVIEWING", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company","applicants","1"], "query": [{ "key": "action", "value": "REVIEWING" }] }
+          }
+        },
+        {
+          "name": "Schedule Interview",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"applicationId\": 1,\n  \"scheduledAt\": \"2026-05-10T10:00:00+07:00\",\n  \"locationId\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company/applicants/interview", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company","applicants","interview"] }
+          }
+        },
+        {
+          "name": "Update Interview",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"interviewId\": 1,\n  \"scheduledAt\": \"2026-05-12T14:00:00+07:00\",\n  \"status\": \"CONFIRMED\",\n  \"notes\": \"Please bring your portfolio\",\n  \"locationId\": 1\n}" },
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company/applicants/interview", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company","applicants","interview"] }
+          }
+        },
+        {
+          "name": "Get All Interviews",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/recruiters/company/applicants/interview?page=0&size=10&sortBy=scheduledAt&sortDir=DESC", "host": ["{{baseUrl}}"], "path": ["api","recruiters","company","applicants","interview"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "scheduledAt" },{ "key": "sortDir", "value": "DESC" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Company",
+      "item": [
+        {
+          "name": "Get Company Info (Public)",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/companies/public/1", "host": ["{{baseUrl}}"], "path": ["api","companies","public","1"] } }
+        },
+        {
+          "name": "Get Verify List (Admin)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/companies/verify?page=0&size=10&sortBy=dateUpdated&sortDir=desc", "host": ["{{baseUrl}}"], "path": ["api","companies","verify"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "dateUpdated" },{ "key": "sortDir", "value": "desc" }] }
+          }
+        },
+        {
+          "name": "Verify Company (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"companyId\": 1,\n  \"approved\": true,\n  \"reason\": null\n}" },
+            "url": { "raw": "{{baseUrl}}/api/companies/verify", "host": ["{{baseUrl}}"], "path": ["api","companies","verify"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Jobs",
+      "item": [
+        {
+          "name": "Get All Jobs (Public)",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/public?page=0&size=10&sortBy=id&sortDir=asc", "host": ["{{baseUrl}}"], "path": ["api","jobs","public"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "id" },{ "key": "sortDir", "value": "asc" }] } }
+        },
+        {
+          "name": "Get Job Detail (Public)",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/public/detail/1", "host": ["{{baseUrl}}"], "path": ["api","jobs","public","detail","1"] } }
+        },
+        {
+          "name": "Search Jobs (Public)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"query\": \"java developer\",\n  \"limit\": 10,\n  \"offset\": 0,\n  \"filters\": {\n    \"location\": \"Ho Chi Minh\",\n    \"employmentType\": \"FULL_TIME\"\n  }\n}" },
+            "url": { "raw": "{{baseUrl}}/api/jobs/public/search", "host": ["{{baseUrl}}"], "path": ["api","jobs","public","search"] }
+          }
+        },
+        {
+          "name": "Get Jobs Metadata (Public)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "[1, 2, 3]" },
+            "url": { "raw": "{{baseUrl}}/api/jobs/public/metadata", "host": ["{{baseUrl}}"], "path": ["api","jobs","public","metadata"] }
+          }
+        },
+        {
+          "name": "Get Recommended Jobs (Public)",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/public/recommend?limit=20", "host": ["{{baseUrl}}"], "path": ["api","jobs","public","recommend"], "query": [{ "key": "limit", "value": "20" }] } }
+        },
+        {
+          "name": "Get Popular Jobs (Public)",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/public/popular?limit=20&recentDays=30", "host": ["{{baseUrl}}"], "path": ["api","jobs","public","popular"], "query": [{ "key": "limit", "value": "20" },{ "key": "recentDays", "value": "30" }] } }
+        },
+        {
+          "name": "Create Job",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Senior Java Developer\",\n  \"categoryId\": 1,\n  \"seniorityLevel\": \"SENIOR\",\n  \"employmentType\": \"FULL_TIME\",\n  \"minExperienceYears\": 3,\n  \"locationId\": 1,\n  \"workMode\": \"HYBRID\",\n  \"salaryMin\": 2000,\n  \"salaryMax\": 4000,\n  \"currency\": \"USD\",\n  \"maxCandidates\": 50,\n  \"dateExpires\": \"2026-06-30T23:59:59+07:00\",\n  \"summary\": \"We are looking for a Senior Java Developer\",\n  \"responsibilities\": \"Design and develop backend services\",\n  \"requirements\": \"3+ years Java experience, Spring Boot\",\n  \"niceToHave\": \"Kubernetes, AWS experience\",\n  \"benefits\": \"Competitive salary, flexible hours\",\n  \"hiringProcess\": \"CV screening -> Technical interview -> Offer\",\n  \"notes\": \"\",\n  \"saveAsDraft\": false,\n  \"skills\": [\"Java\", \"Spring Boot\", \"PostgreSQL\"]\n}" },
+            "url": { "raw": "{{baseUrl}}/api/jobs", "host": ["{{baseUrl}}"], "path": ["api","jobs"] }
+          }
+        },
+        {
+          "name": "Update Job",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Senior Java Developer (Updated)\",\n  \"categoryId\": 1,\n  \"seniorityLevel\": \"SENIOR\",\n  \"employmentType\": \"FULL_TIME\",\n  \"minExperienceYears\": 3,\n  \"locationId\": 1,\n  \"workMode\": \"HYBRID\",\n  \"salaryMin\": 2500,\n  \"salaryMax\": 4500,\n  \"currency\": \"USD\",\n  \"dateExpires\": \"2026-07-31T23:59:59+07:00\",\n  \"summary\": \"Updated job description\",\n  \"responsibilities\": \"Design and develop backend services\",\n  \"requirements\": \"3+ years Java experience\",\n  \"niceToHave\": \"Kubernetes, AWS\",\n  \"benefits\": \"Competitive salary\",\n  \"hiringProcess\": \"CV -> Interview -> Offer\",\n  \"notes\": \"\",\n  \"skills\": [\"Java\", \"Spring Boot\", \"PostgreSQL\", \"Redis\"]\n}" },
+            "url": { "raw": "{{baseUrl}}/api/jobs/1", "host": ["{{baseUrl}}"], "path": ["api","jobs","1"] }
+          }
+        },
+        {
+          "name": "Cancel Job",
+          "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/api/jobs/cancel/1", "host": ["{{baseUrl}}"], "path": ["api","jobs","cancel","1"] } }
+        },
+        {
+          "name": "Moderate Job (Admin)",
+          "request": {
+            "method": "PATCH",
+            "url": { "raw": "{{baseUrl}}/api/jobs/1/moderate?action=APPROVE", "host": ["{{baseUrl}}"], "path": ["api","jobs","1","moderate"], "query": [{ "key": "action", "value": "APPROVE" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Job Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/categories?page=0&size=10&sortBy=id&sortDir=asc", "host": ["{{baseUrl}}"], "path": ["api","jobs","categories"], "query": [{ "key": "page", "value": "0" },{ "key": "size", "value": "10" },{ "key": "sortBy", "value": "id" },{ "key": "sortDir", "value": "asc" }] } }
+        },
+        {
+          "name": "Get Root Categories",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/categories/roots", "host": ["{{baseUrl}}"], "path": ["api","jobs","categories","roots"] } }
+        },
+        {
+          "name": "Get Child Categories",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{baseUrl}}/api/jobs/categories/1/children", "host": ["{{baseUrl}}"], "path": ["api","jobs","categories","1","children"] } }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Software Development\"\n}" },
+            "url": { "raw": "{{baseUrl}}/api/jobs/categories?parentId=1", "host": ["{{baseUrl}}"], "path": ["api","jobs","categories"], "query": [{ "key": "parentId", "value": "1", "description": "Optional - omit for root category" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "item": [
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "method": "POST",
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+            "url": { "raw": "{{baseUrl}}/api/resources/upload/avatar", "host": ["{{baseUrl}}"], "path": ["api","resources","upload","avatar"] }
+          }
+        },
+        {
+          "name": "Upload Company Logo",
+          "request": {
+            "method": "POST",
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+            "url": { "raw": "{{baseUrl}}/api/resources/upload/company-logo", "host": ["{{baseUrl}}"], "path": ["api","resources","upload","company-logo"] }
+          }
+        },
+        {
+          "name": "Upload Resume",
+          "request": {
+            "method": "POST",
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] },
+            "url": { "raw": "{{baseUrl}}/api/resources/upload/resume", "host": ["{{baseUrl}}"], "path": ["api","resources","upload","resume"] }
+          }
+        },
+        {
+          "name": "Download Resource",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/resources/download?url=https://res.cloudinary.com/xxx/image/upload/avatar/abc.jpg", "host": ["{{baseUrl}}"], "path": ["api","resources","download"], "query": [{ "key": "url", "value": "https://res.cloudinary.com/xxx/image/upload/avatar/abc.jpg" }] }
+          }
+        },
+        {
+          "name": "Analyze Resume",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/resources/resumes/analyze?resourceId=1", "host": ["{{baseUrl}}"], "path": ["api","resources","resumes","analyze"], "query": [{ "key": "resourceId", "value": "1" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Get Recruiter Statistics",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/statistics/recruiter", "host": ["{{baseUrl}}"], "path": ["api","statistics","recruiter"] } }
+        },
+        {
+          "name": "Get Admin Statistics",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/api/statistics/admin", "host": ["{{baseUrl}}"], "path": ["api","statistics","admin"] } }
+        }
+      ]
+    },
+    {
+      "name": "Interactions",
+      "item": [
+        {
+          "name": "Track Interactions",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "[\n  {\n    \"job_id\": 1,\n    \"account_id\": 1,\n    \"event_type\": \"VIEW\",\n    \"metadata\": {},\n    \"occurred_at\": \"2026-05-03T10:00:00+07:00\"\n  }\n]" },
+            "url": { "raw": "{{baseUrl}}/api/interactions", "host": ["{{baseUrl}}"], "path": ["api","interactions"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sync",
+      "item": [
+        {
+          "name": "Sync Data",
+          "request": { "auth": { "type": "noauth" }, "method": "POST", "url": { "raw": "{{baseUrl}}/api/sync", "host": ["{{baseUrl}}"], "path": ["api","sync"] } }
+        }
+      ]
+    }
+  ]
+}
