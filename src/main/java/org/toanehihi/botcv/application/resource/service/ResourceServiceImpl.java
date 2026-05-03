@@ -35,10 +35,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
-import java.util.function.LongConsumer;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ResourceServiceImpl implements ResourceService {
     private final RecruiterRepository recruiterRepository;
     private final CandidateRepository candidateRepository;
@@ -49,7 +50,7 @@ public class ResourceServiceImpl implements ResourceService {
     private final CloudStorageService cloudStorageService;
     private final CandidateService candidateService;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
 
     @Value("${app.ner-service-url}")
     private String nerServiceUrl;
@@ -58,6 +59,17 @@ public class ResourceServiceImpl implements ResourceService {
     private String cloudinaryBaseUrl;
 
     @Override
+    public Optional<Resource> getResource(Long id) {
+        return resourceRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Resource> findByPublicId(String publicId) {
+        return resourceRepository.findByPublicId(publicId);
+    }
+
+    @Override
+    @Transactional
     public ResourceResponse updateUserAvatar(Account account, MultipartFile avatar) {
         RoleName role = RoleName.valueOf(account.getRole().getName());
 
@@ -66,10 +78,10 @@ public class ResourceServiceImpl implements ResourceService {
                 Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
                         .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
                 yield updateAvatar(
-                        recruiter.getAvatarResourceId(),
+                        recruiter.getAvatar(),
                         avatar,
-                        resourceId -> {
-                            recruiter.setAvatarResourceId(resourceId);
+                        resource -> {
+                            recruiter.setAvatar(resource);
                             recruiter.setDateUpdated(OffsetDateTime.now());
                             recruiterRepository.save(recruiter);
                         });
@@ -78,10 +90,10 @@ public class ResourceServiceImpl implements ResourceService {
                 Candidate candidate = candidateRepository.findByAccountId(account.getId())
                         .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_CANDIDATE_NOT_FOUND));
                 yield updateAvatar(
-                        candidate.getAvatarResourceId(),
+                        candidate.getAvatar(),
                         avatar,
-                        resourceId -> {
-                            candidate.setAvatarResourceId(resourceId);
+                        resource -> {
+                            candidate.setAvatar(resource);
                             candidate.setDateUpdated(OffsetDateTime.now());
                             candidateRepository.save(candidate);
                         });
@@ -91,18 +103,14 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     private ResourceResponse updateAvatar(
-            Long currentAvatarId,
+            Resource currentAvatar,
             MultipartFile avatar,
-            LongConsumer updateEntity) {
+            Consumer<Resource> updateEntity) {
 
-        // Delete existing avatar if present
-        Optional<Resource> currentAvatar = resourceRepository
-                .findByIdAndResourceType(currentAvatarId, ResourceType.IMAGE);
-
-        currentAvatar.ifPresent(resource -> {
-            resourceRepository.delete(resource);
-            cloudStorageService.deleteFile(resource.getPublicId());
-        });
+        if (currentAvatar != null) {
+            resourceRepository.delete(currentAvatar);
+            cloudStorageService.deleteFile(currentAvatar.getPublicId());
+        }
 
         // Upload and save new avatar
         CloudinaryStorageImpl.CloudinaryFileInfo fileInfo = cloudStorageService.storeFile(avatar, "avatar");
@@ -117,13 +125,13 @@ public class ResourceServiceImpl implements ResourceService {
 
         Resource savedResource = resourceRepository.save(resource);
 
-        // Update entity with new avatar ID
-        updateEntity.accept(savedResource.getId());
+        updateEntity.accept(savedResource);
 
         return resourceMapper.toResponse(savedResource);
     }
 
     @Override
+    @Transactional
     public ResourceResponse updateCompanyLogo(Account account, MultipartFile logo) {
         Recruiter recruiter = recruiterRepository.findByAccountId(account.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_RECRUITER_NOT_FOUND));
@@ -133,13 +141,11 @@ public class ResourceServiceImpl implements ResourceService {
             throw new AppException(ErrorCode.RECRUITER_COMPANY_NOT_FOUND);
         }
 
-        Optional<Resource> currentLogo = resourceRepository
-                .findByIdAndResourceType(company.getLogoResourceId(), ResourceType.IMAGE);
-
-        currentLogo.ifPresent(resource -> {
-            resourceRepository.delete(resource);
-            cloudStorageService.deleteFile(resource.getPublicId());
-        });
+        Resource currentLogo = company.getLogo();
+        if (currentLogo != null) {
+            resourceRepository.delete(currentLogo);
+            cloudStorageService.deleteFile(currentLogo.getPublicId());
+        }
         CloudinaryStorageImpl.CloudinaryFileInfo fileInfo = cloudStorageService.storeFile(logo, "company_logo");
         Resource resource = Resource.builder()
                 .contentType(fileInfo.contentType())
@@ -149,12 +155,13 @@ public class ResourceServiceImpl implements ResourceService {
                 .name(fileInfo.fileName())
                 .build();
         Resource savedResource = resourceRepository.save(resource);
-        company.setLogoResourceId(savedResource.getId());
+        company.setLogo(savedResource);
         companyRepository.save(company);
         return resourceMapper.toResponse(savedResource);
     }
 
     @Override
+    @Transactional
     public ResourceResponse uploadResume(Account account, MultipartFile file) {
         candidateRepository.findByAccountId(account.getId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_CANDIDATE_NOT_FOUND));

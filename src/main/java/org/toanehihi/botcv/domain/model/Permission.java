@@ -24,6 +24,6 @@ public class Permission {
     private String name;
 
     @CreationTimestamp
-    @Column(name = "date_created")
+    @Column(name = "date_created", updatable = false)
     private OffsetDateTime dateCreated;
 }

@@ -5,7 +5,7 @@ import org.toanehihi.botcv.domain.model.Location;
 import java.time.OffsetDateTime;
 
 public interface EmailService {
-    void sendPasswordResetEmail(String recieveEmail, String token);
+    void sendPasswordResetEmail(String receiveEmail, String token);
 
     void sendVerificationEmail(String receiveEmail, String token);
 

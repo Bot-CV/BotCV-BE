@@ -48,8 +48,10 @@ public class JobApplicationMapper {
         Resource cvResource = resourceRepository.findByIdAndResourceType(jobApplication.getCvResourceId(), ResourceType.DOCUMENT)
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
 
-        Resource avatarResource = resourceRepository.findByIdAndResourceType(jobApplication.getCandidate().getAvatarResourceId(), ResourceType.IMAGE)
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+        Resource avatarResource = jobApplication.getCandidate().getAvatar();
+        if (avatarResource == null) {
+            throw new AppException(ErrorCode.RESOURCE_NOT_FOUND);
+        }
         resources.add(cvResource);
         resources.add(avatarResource);
 

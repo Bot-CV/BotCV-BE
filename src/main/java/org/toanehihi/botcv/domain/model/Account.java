@@ -29,7 +29,7 @@ public class Account {
 	@Column(name = "password")
 	private String password;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "role_id", nullable = false)
 	private Role role;
 
@@ -46,7 +46,7 @@ public class Account {
 	private OffsetDateTime verifiedAt;
 
 	@CreationTimestamp
-	@Column(name = "date_created", nullable = false)
+	@Column(name = "date_created", nullable = false, updatable = false)
 	private OffsetDateTime dateCreated;
 
 	@UpdateTimestamp

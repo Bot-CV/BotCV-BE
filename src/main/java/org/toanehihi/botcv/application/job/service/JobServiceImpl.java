@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class JobServiceImpl implements JobService {
     private final JobRepository jobRepository;
     private final JobMapper jobMapper;
@@ -415,7 +416,7 @@ public class JobServiceImpl implements JobService {
             }
             List<Job> jobs = new ArrayList<>();
             for (Long jobId : jobIds) {
-                jobs.add(jobRepository.findById(jobId).get());
+                jobRepository.findById(jobId).ifPresent(jobs::add);
             }
             Map<Long, JobResponse> jobMap = jobs.stream()
                     .map(jobMapper::toResponse)

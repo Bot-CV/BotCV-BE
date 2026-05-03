@@ -4,11 +4,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 import org.toanehihi.botcv.domain.model.Candidate;
-import org.toanehihi.botcv.domain.model.enums.ResourceType;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.location.LocationMapper;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.resource.ResourceMapper;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.skill.CandidateSkillMapper;
-import org.toanehihi.botcv.infrastructure.persistence.repositories.ResourceRepository;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateResponse;
 
@@ -19,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 public class CandidateMapper {
     private final LocationMapper locationMapper;
     private final CandidateSkillMapper candidateSkillMapper;
-    private final ResourceRepository resourceRepository;
     private final ResourceMapper resourceMapper;
 
     public void updateCandidate(Candidate candidate, CandidateRequest request) {
@@ -46,10 +43,8 @@ public class CandidateMapper {
                 .remotePref(candidate.getRemotePref())
                 .relocationPref(candidate.getRelocationPref())
                 .email(candidate.getAccount().getEmail())
-                .resource(candidate.getAvatarResourceId() != null
-                        ? resourceRepository.findByIdAndResourceType(candidate.getAvatarResourceId(), ResourceType.IMAGE)
-                                .map(resourceMapper::toResponse)
-                                .orElse(null)
+                .resource(candidate.getAvatar() != null
+                        ? resourceMapper.toResponse(candidate.getAvatar())
                         : null)
                 .bio(candidate.getBio())
                 .dateCreated(candidate.getDateCreated())

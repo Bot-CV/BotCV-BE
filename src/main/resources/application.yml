@@ -15,6 +15,8 @@ spring:
     redis:
       host: ${REDIS_HOST}
       port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+      username: ${REDIS_USERNAME}
   jpa:
     hibernate:
       ddl-auto: none
@@ -28,20 +30,20 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: BotCV
+          issuer-uri: ${JWT_ISSUER_URI}
           secret-key: ${JWT_SECRET}
           access-token:
-            expiration: 604800000
+            expiration: ${ACCESS_TOKEN_EXPIRATION}
           refresh-token:
-            expiration: 604800000
+            expiration: ${REFRESH_TOKEN_EXPIRATION}
       client:
         registration:
           google:
             client-id: ${CLIENT_ID}
             client-secret: ${CLIENT_SECRET}
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
@@ -59,7 +61,7 @@ cloudinary:
   api-secret: ${CLOUDINARY_API_SECRET}
 app:
   cloudinary:
-    base-url: ${CLOUDINARY_BASE_URL:https://res.cloudinary.com}
+    base-url: ${CLOUDINARY_BASE_URL}
   frontend-url: ${FRONTEND_URL}
   ner-service-url: ${NER_SERVICE_URL}
   search-service-url: ${SEARCH_SERVICE_URL}

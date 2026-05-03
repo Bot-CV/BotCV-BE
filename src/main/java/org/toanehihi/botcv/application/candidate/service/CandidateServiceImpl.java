@@ -30,7 +30,6 @@ import org.toanehihi.botcv.infrastructure.persistence.mappers.candidate.Candidat
 import org.toanehihi.botcv.infrastructure.persistence.mappers.job.JobApplicationMapper;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.job.SavedJobMapper;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.location.LocationMapper;
-import org.toanehihi.botcv.infrastructure.persistence.mappers.resource.ResourceMapper;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.CandidateRepository;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.JobApplicationRepository;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.JobRepository;
@@ -55,6 +54,7 @@ import lombok.RequiredArgsConstructor;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CandidateServiceImpl implements CandidateService {
 
     private final CandidateRepository candidateRepository;
@@ -70,7 +70,12 @@ public class CandidateServiceImpl implements CandidateService {
     private final JobApplicationMapper jobApplicationMapper;
     private final CurrentAccountProvider currentAccountProvider;
     private final CloudStorageService cloudStorageService;
-    private final ResourceMapper resourceMapper;
+
+    @Override
+    @Transactional
+    public Candidate createCandidate(Candidate candidate) {
+        return candidateRepository.save(candidate);
+    }
 
     @Override
     public CandidateResponse getProfile() {
@@ -199,9 +204,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public PageResult<ResourceResponse> getCandidateResumes(int page, int size, String sortBy, String sortDir) {
-        // findByOwnerIdAndResourceType removed — owner tracking via ownerId is no longer
-        // supported in Resource entity. Return empty page for now.
-        return PageResult.from(Page.empty());
+        throw new UnsupportedOperationException("getCandidateResumes not yet implemented");
     }
 
     @Override
@@ -238,6 +241,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
+    @Transactional
     public void updateProfileFromCV(Long accountId, ResumeAnalysisResponse cvData) {
         Candidate candidate = candidateRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_CANDIDATE_NOT_FOUND));

@@ -29,8 +29,9 @@ public class Recruiter {
 
     private String phone;
 
-    @Column(name = "avatar_resource_id")
-    private Long avatarResourceId;
+    @OneToOne
+    @JoinColumn(name = "avatar_resource_id")
+    private Resource avatar;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)

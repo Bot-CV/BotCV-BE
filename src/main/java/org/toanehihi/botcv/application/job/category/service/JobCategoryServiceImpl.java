@@ -5,15 +5,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.toanehihi.botcv.domain.exception.AppException;
+import org.toanehihi.botcv.domain.exception.ErrorCode;
 import org.toanehihi.botcv.domain.model.JobCategory;
 import org.toanehihi.botcv.infrastructure.persistence.repositories.JobCategoryRepository;
 import org.toanehihi.botcv.interfaces.web.dtos.PageResult;
 import org.toanehihi.botcv.interfaces.web.dtos.job.category.CreateCategoryRequest;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class JobCategoryServiceImpl implements JobCategoryService {
     private final JobCategoryRepository jobCategoryRepository;
 
@@ -26,6 +31,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
     }
 
     @Override
+    @Transactional
     public JobCategory createCategory(Long parentId, CreateCategoryRequest request) {
         JobCategory.JobCategoryBuilder builder = JobCategory.builder()
                 .name(request.getName())
@@ -33,7 +39,7 @@ public class JobCategoryServiceImpl implements JobCategoryService {
 
         if (parentId != null) {
             JobCategory parent = jobCategoryRepository.findById(parentId)
-                    .orElseThrow(() -> new IllegalArgumentException("Parent category not found"));
+                    .orElseThrow(() -> new AppException(ErrorCode.JOB_CATEGORY_NOT_FOUND));
             builder.parent(parent);
         }
 

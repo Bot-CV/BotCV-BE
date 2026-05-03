@@ -8,7 +8,7 @@ import org.toanehihi.botcv.interfaces.web.dtos.resource.ResourceResponse;
 @Component
 public class ResourceMapper {
 
-    @Value("${app.cloudinary.base-url:}")
+    @Value("${app.cloudinary.base-url}")
     private String cloudinaryBaseUrl;
 
     public ResourceResponse toResponse(Resource resource) {

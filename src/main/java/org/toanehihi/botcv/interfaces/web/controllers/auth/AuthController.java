@@ -4,7 +4,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.toanehihi.botcv.application.auth.service.AuthService;
+import org.toanehihi.botcv.application.auth.service.AuthenticationService;
+import org.toanehihi.botcv.application.auth.service.RegistrationService;
+import org.toanehihi.botcv.application.auth.service.SessionService;
 import org.toanehihi.botcv.interfaces.web.dtos.DataResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.account.AccountResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.account.CandidateAccountRequest;
@@ -17,53 +19,53 @@ import org.toanehihi.botcv.interfaces.web.dtos.auth.RefreshTokenRequest;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("api/auth")
 @RequiredArgsConstructor
-@Slf4j
 public class AuthController {
-    private final AuthService authService;
+    private final RegistrationService registrationService;
+    private final AuthenticationService authenticationService;
+    private final SessionService sessionService;
 
     @PostMapping("/register/candidate")
     public DataResponse<AccountResponse> candidateRegister(@Valid @RequestBody CandidateAccountRequest request) {
         return DataResponse.<AccountResponse>builder()
-                .data(authService.candidateRegister(request))
+                .data(registrationService.candidateRegister(request))
                 .build();
     }
 
     @PostMapping("/register/recruiter")
     public DataResponse<AccountResponse> recruiterRegister(@Valid @RequestBody RecruiterAccountRequest request) {
         return DataResponse.<AccountResponse>builder()
-                .data(authService.recruiterRegister(request))
+                .data(registrationService.recruiterRegister(request))
                 .build();
     }
 
     @PostMapping("/login")
     public DataResponse<AuthenticationResponse> login(@RequestBody LoginRequest request) {
         return DataResponse.<AuthenticationResponse>builder()
-                .data(authService.login(request))
+                .data(authenticationService.login(request))
                 .build();
     }
 
     @PostMapping("/login/google")
     public DataResponse<AuthenticationResponse> loginWithGoogle(@RequestBody GoogleLoginRequest request) {
         return DataResponse.<AuthenticationResponse>builder()
-                .data(authService.loginWithGoogle(request))
+                .data(authenticationService.loginWithGoogle(request))
                 .build();
     }
 
     @PostMapping("/refresh")
     public DataResponse<AuthenticationResponse> refreshToken(@RequestBody RefreshTokenRequest request) {
         return DataResponse.<AuthenticationResponse>builder()
-                .data(authService.refreshToken(request))
+                .data(sessionService.refreshToken(request))
                 .build();
     }
 
     @PostMapping("/logout")
-    public DataResponse<String> refreshToken(@RequestBody LogoutRequest request) {
-        authService.logout(request);
+    public DataResponse<String> logout(@RequestBody LogoutRequest request) {
+        sessionService.logout(request);
         return DataResponse.<String>builder()
                 .data("Logout successfully")
                 .build();

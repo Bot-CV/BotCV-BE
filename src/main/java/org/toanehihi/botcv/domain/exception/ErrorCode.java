@@ -108,7 +108,7 @@ public enum ErrorCode {
     SYSTEM_UNKNOWN_ERROR(9998, "System unknow error", HttpStatus.INTERNAL_SERVER_ERROR),
     SYSTEM_INTERNAL_ERROR(9999, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
 
-    private int code;
-    private String message;
-    private HttpStatus status;
+    private final int code;
+    private final String message;
+    private final HttpStatus status;
 }

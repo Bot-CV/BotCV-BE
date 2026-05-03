@@ -1,7 +1,8 @@
 package org.toanehihi.botcv.interfaces.web.controllers.recruiter;
 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.toanehihi.botcv.application.company.service.CompanyService;
+import org.toanehihi.botcv.application.interview.service.InterviewService;
 import org.toanehihi.botcv.application.recruiter.service.RecruiterService;
 import org.toanehihi.botcv.domain.model.Account;
 import org.toanehihi.botcv.domain.model.enums.ApplicationStatus;
@@ -17,7 +18,6 @@ import org.toanehihi.botcv.interfaces.web.dtos.job.JobResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.job.application.JobApplicantResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.recruiter.RecruiterRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.recruiter.RecruiterResponse;
-import org.toanehihi.botcv.interfaces.web.dtos.resource.ResourceResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class RecruiterController {
 
     private final RecruiterService recruiterService;
+    private final CompanyService companyService;
+    private final InterviewService interviewService;
 
     @GetMapping("/profile")
     DataResponse<RecruiterResponse> getProfile() {
@@ -45,14 +47,7 @@ public class RecruiterController {
     @PutMapping("/company")
     DataResponse<CompanyResponse> updateCompany(@RequestBody CompanyRequest request) {
         return DataResponse.<CompanyResponse>builder()
-                .data(recruiterService.updateCompany(request))
-                .build();
-    }
-
-    @PostMapping("/avatar")
-    DataResponse<ResourceResponse> updateAvatar(@RequestParam("file") MultipartFile file) {
-        return DataResponse.<ResourceResponse>builder()
-                .data(recruiterService.updateAvatar(file))
+                .data(companyService.updateCompany(request))
                 .build();
     }
 
@@ -98,7 +93,7 @@ public class RecruiterController {
             @CurrentUser Account account,
             @RequestBody CreateInterviewRequest request) {
         return DataResponse.<InterviewResponse>builder()
-                .data(recruiterService.scheduleInterview(account, request))
+                .data(interviewService.scheduleInterview(account, request))
                 .build();
     }
 
@@ -107,7 +102,7 @@ public class RecruiterController {
             @CurrentUser Account account,
             @RequestBody UpdateInterviewRequest request) {
         return DataResponse.<InterviewResponse>builder()
-                .data(recruiterService.updateInterview(account, request))
+                .data(interviewService.updateInterview(account, request))
                 .build();
     }
 
@@ -119,7 +114,7 @@ public class RecruiterController {
             @RequestParam(value = "sortBy", required = false, defaultValue = "scheduledAt") String sortBy,
             @RequestParam(value = "sortDir", required = false, defaultValue = "DESC") String sortDir) {
         return DataResponse.<PageResult<InterviewResponse>>builder()
-                .data(recruiterService.getAllInterviews(account, page, size, sortBy, sortDir))
+                .data(interviewService.getAllInterviews(account, page, size, sortBy, sortDir))
                 .build();
     }
 }

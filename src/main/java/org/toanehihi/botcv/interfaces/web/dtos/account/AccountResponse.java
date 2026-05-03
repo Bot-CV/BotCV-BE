@@ -16,9 +16,7 @@ import lombok.Data;
 public class AccountResponse {
     private Long id;
     private String email;
-    private String roleName;
+    private String role;
     private AccountStatus status;
     private AuthProvider provider;
-    private OffsetDateTime verifiedAt;
-    private OffsetDateTime dateCreated;
 }

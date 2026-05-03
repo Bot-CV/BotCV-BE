@@ -3,7 +3,6 @@ package org.toanehihi.botcv.infrastructure.persistence.mappers.job;
 import org.springframework.stereotype.Component;
 import org.toanehihi.botcv.domain.model.JobDescription;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.skill.SkillMapper;
-import org.toanehihi.botcv.infrastructure.persistence.repositories.ResourceRepository;
 import org.toanehihi.botcv.interfaces.web.dtos.job.CreateJobRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.job.JobDetailResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.job.JobEventPayload;
@@ -13,20 +12,16 @@ import lombok.RequiredArgsConstructor;
 
 import org.toanehihi.botcv.domain.model.Job;
 import org.toanehihi.botcv.domain.model.Location;
-import org.toanehihi.botcv.domain.model.Resource;
 
 @Component
 @RequiredArgsConstructor
 public class JobMapper {
     private final SkillMapper skillMapper;
-    private final ResourceRepository resourceRepository;
 
     public JobResponse toResponse(Job job) {
         String companyLogoPublicId = null;
-        if (job.getCompany() != null && job.getCompany().getLogoResourceId() != null) {
-            companyLogoPublicId = resourceRepository.findById(job.getCompany().getLogoResourceId())
-                    .map(Resource::getPublicId)
-                    .orElse(null);
+        if (job.getCompany() != null && job.getCompany().getLogo() != null) {
+            companyLogoPublicId = job.getCompany().getLogo().getPublicId();
         }
         return JobResponse.builder()
                 .id(job.getId())

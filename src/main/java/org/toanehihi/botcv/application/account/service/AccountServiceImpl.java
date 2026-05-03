@@ -1,6 +1,7 @@
 package org.toanehihi.botcv.application.account.service;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,20 +23,45 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final TokenService tokenService;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-    private static final String RESET_TOKEN_PREFIX = "reset_token:";
-    private static final String VERIFICATION_TOKEN_PREFIX = "verify_token:";
+
+    @Override
+    public Optional<Account> findByEmail(String email) {
+        return accountRepository.findByEmail(email);
+    }
+
+    @Override
+    public Account findByEmailOrThrow(String email) {
+        return accountRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return accountRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsById(Long accountId) {
+        return accountRepository.existsById(accountId);
+    }
+
+    @Override
+    @Transactional
+    public Account save(Account account) {
+        return accountRepository.save(account);
+    }
 
     @Override
     @Transactional
     public void changeAccountStatus(Long accountId, AccountStatus status) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
         account.setStatus(status);
         accountRepository.save(account);
     }
@@ -44,67 +70,53 @@ public class AccountServiceImpl implements AccountService {
     public void forgotPassword(ForgotPasswordRequest request) {
         Account account = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
         String resetToken = UUID.randomUUID().toString();
-        tokenService.addToken(RESET_TOKEN_PREFIX, resetToken, account.getEmail());
+        tokenService.storeResetToken(resetToken, account.getEmail());
         emailService.sendPasswordResetEmail(account.getEmail(), resetToken);
     }
 
     @Override
+    @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        String redisKey = RESET_TOKEN_PREFIX + request.getToken();
-        String redisValue = tokenService.getValue(redisKey);
-
-        if (redisValue == null) {
+        String email = tokenService.getResetTokenEmail(request.getToken());
+        if (email == null) {
             throw new AppException(ErrorCode.AUTH_RESET_TOKEN_INVALID);
         }
-
-        Account account = accountRepository.findByEmail(redisValue)
+        Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
         if (passwordEncoder.matches(request.getNewPassword(), account.getPassword())) {
             throw new AppException(ErrorCode.PASSWORD_SAME_AS_OLD);
         }
-
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
         accountRepository.save(account);
-        tokenService.deleteValue(redisKey);
+        tokenService.deleteResetToken(request.getToken());
     }
 
     @Override
     public void resendVerificationEmail(ResendVerificationRequest request) {
         Account account = accountRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
         if (account.getVerifiedAt() != null) {
             throw new AppException(ErrorCode.ACCOUNT_ALREADY_VERIFIED);
         }
-
         String verificationToken = UUID.randomUUID().toString();
-        tokenService.addToken(VERIFICATION_TOKEN_PREFIX, verificationToken, account.getEmail());
-
+        tokenService.storeVerificationToken(verificationToken, account.getEmail());
         emailService.sendVerificationEmail(account.getEmail(), verificationToken);
-
         log.info("Verification email resent to: {}", account.getEmail());
     }
 
     @Override
+    @Transactional
     public void verifyEmail(String token) {
-        String redisKey = VERIFICATION_TOKEN_PREFIX + token;
-        String email = tokenService.getValue(redisKey);
-
+        String email = tokenService.getVerificationTokenEmail(token);
         if (email == null) {
             throw new AppException(ErrorCode.ACCOUNT_VERIFY_TOKEN_INVALID);
         }
-
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
         account.setVerifiedAt(OffsetDateTime.now());
         accountRepository.save(account);
-
-        tokenService.deleteValue(redisKey);
-
+        tokenService.deleteVerificationToken(token);
         log.info("Email verified successfully for: {}", email);
     }
 }

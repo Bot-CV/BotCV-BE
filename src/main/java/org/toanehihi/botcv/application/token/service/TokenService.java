@@ -3,11 +3,17 @@ package org.toanehihi.botcv.application.token.service;
 public interface TokenService {
     void addToBlacklist(String token, long expiryTime);
 
-    void addToken(String prefix, String token, String value);
-
     boolean isBlacklisted(String token);
 
-    String getValue(String key);
+    void storeResetToken(String token, String email);
 
-    void deleteValue(String key);
+    String getResetTokenEmail(String token);
+
+    void deleteResetToken(String token);
+
+    void storeVerificationToken(String token, String email);
+
+    String getVerificationTokenEmail(String token);
+
+    void deleteVerificationToken(String token);
 }

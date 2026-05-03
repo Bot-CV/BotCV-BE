@@ -18,22 +18,10 @@ import lombok.RequiredArgsConstructor;
 public class AccountMapper {
     private final PasswordEncoder passwordEncoder;
 
-    public Account toCandidateAccount(CandidateAccountRequest request) {
+    public Account toEntity(String email, String password) {
         return Account.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .status(AccountStatus.ACTIVE)
-                .provider(AuthProvider.LOCAL)
-                .dateCreated(OffsetDateTime.now())
-                .dateUpdated(OffsetDateTime.now())
-                .build();
-    }
-
-    public Account toRecruiterAccount(RecruiterAccountRequest request) {
-        return Account.builder()
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .status(AccountStatus.ACTIVE)
+                .email(email)
+                .password(passwordEncoder.encode(password))
                 .provider(AuthProvider.LOCAL)
                 .dateCreated(OffsetDateTime.now())
                 .dateUpdated(OffsetDateTime.now())
@@ -44,11 +32,9 @@ public class AccountMapper {
         return AccountResponse.builder()
                 .id(account.getId())
                 .email(account.getEmail())
-                .roleName(account.getRole().getName())
+                .role(account.getRole().getName())
                 .status(account.getStatus())
                 .provider(account.getProvider())
-                .verifiedAt(account.getVerifiedAt())
-                .dateCreated(account.getDateCreated())
                 .build();
     }
 }

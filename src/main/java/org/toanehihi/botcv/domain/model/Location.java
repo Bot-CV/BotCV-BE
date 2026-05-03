@@ -2,8 +2,11 @@ package org.toanehihi.botcv.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 
 @Getter
 @Setter
@@ -36,6 +39,14 @@ public class Location {
 
 	@Column(name = "lng")
 	private BigDecimal lng;
+
+	@CreationTimestamp
+	@Column(name = "date_created", nullable = false, updatable = false)
+	private OffsetDateTime dateCreated;
+
+	@UpdateTimestamp
+	@Column(name = "date_updated", nullable = false)
+	private OffsetDateTime dateUpdated;
 
 }
 

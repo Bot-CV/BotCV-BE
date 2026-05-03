@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.toanehihi.botcv.domain.model.Company;
 
+import java.util.Optional;
+
 @Repository
 public interface CompanyRepository extends JpaRepository<Company, Long> {
 
@@ -14,4 +16,6 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     @Query("SELECT COUNT(c) FROM Company c WHERE c.verified = false")
     Long countUnverifiedCompanies();
+
+    Optional<Company> findByName(String name);
 }

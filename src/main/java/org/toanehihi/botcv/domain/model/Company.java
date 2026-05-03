@@ -42,8 +42,9 @@ public class Company {
     @Column(name = "size", columnDefinition = "company_size")
     private CompanySize size;
 
-    @Column(name = "logo_resource_id")
-    private Long logoResourceId;
+    @OneToOne
+    @JoinColumn(name = "logo_resource_id")
+    private Resource logo;
 
     @Column(name = "is_verified")
     @Builder.Default

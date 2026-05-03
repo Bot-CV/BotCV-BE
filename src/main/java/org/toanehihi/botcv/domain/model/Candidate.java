@@ -24,7 +24,7 @@ public class Candidate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "account_id", nullable = false, unique = true)
     private Account account;
 
@@ -33,7 +33,7 @@ public class Candidate {
 
     private String phone;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_id")
     private Location location;
 
@@ -53,8 +53,9 @@ public class Candidate {
     @Column(name = "relocation_pref")
     private Boolean relocationPref;
 
-    @Column(name = "avatar_resource_id")
-    private Long avatarResourceId;
+    @OneToOne
+    @JoinColumn(name = "avatar_resource_id")
+    private Resource avatar;
 
     @Column(name = "bio", columnDefinition = "text")
     private String bio;

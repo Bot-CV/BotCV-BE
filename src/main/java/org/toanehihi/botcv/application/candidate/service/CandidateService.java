@@ -1,6 +1,7 @@
 package org.toanehihi.botcv.application.candidate.service;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.toanehihi.botcv.domain.model.Candidate;
 import org.toanehihi.botcv.interfaces.web.dtos.PageResult;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.candidate.CandidateResponse;
@@ -11,6 +12,8 @@ import org.toanehihi.botcv.interfaces.web.dtos.resource.ResourceResponse;
 import org.toanehihi.botcv.interfaces.web.dtos.resource.ResumeAnalysisResponse;
 
 public interface CandidateService {
+
+    Candidate createCandidate(Candidate candidate);
 
     CandidateResponse getProfile();
 

@@ -31,6 +31,9 @@ public class Moderator {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @Column(name = "avatar_resource_id", unique = true)
+    private Long avatarResourceId;
+
     @CreationTimestamp
     @Column(name = "date_created")
     private OffsetDateTime dateCreated;

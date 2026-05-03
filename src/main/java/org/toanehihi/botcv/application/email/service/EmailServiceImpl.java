@@ -132,6 +132,8 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
+    @Override
+    @Async
     public void sendInterviewInvitationEmail(Location location, OffsetDateTime scheduledAt, String fullName,
             String candidateEmail) {
         try {
@@ -166,6 +168,7 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Async
     public void sendInterviewUpdateEmail(Location location, OffsetDateTime oldScheduledAt, OffsetDateTime scheduledAt,
             String fullName, String candidateEmail) {
         try {

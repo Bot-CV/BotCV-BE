@@ -6,9 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.toanehihi.botcv.domain.model.Company;
 import org.toanehihi.botcv.domain.model.enums.CompanySize;
-import org.toanehihi.botcv.domain.model.enums.ResourceType;
 import org.toanehihi.botcv.infrastructure.persistence.mappers.resource.ResourceMapper;
-import org.toanehihi.botcv.infrastructure.persistence.repositories.ResourceRepository;
 import org.toanehihi.botcv.interfaces.web.dtos.company.CompanyRequest;
 import org.toanehihi.botcv.interfaces.web.dtos.company.CompanyResponse;
 
@@ -19,8 +17,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CompanyMapper {
     private final CompanyLocationMapper companyLocationMapper;
-    private final ResourceRepository resourceRepository;
     private final ResourceMapper resourceMapper;
+
+
 
     public void updateCompany(Company company, CompanyRequest request) {
         company.setName(request.getName());
@@ -42,9 +41,9 @@ public class CompanyMapper {
                 .phone(company.getPhone())
                 .industry(company.getIndustry())
                 .description(company.getDescription())
-                .resource(resourceRepository.findByIdAndResourceType(company.getLogoResourceId(), ResourceType.IMAGE)
-                        .map(resourceMapper::toResponse)
-                        .orElse(null))
+                .resource(company.getLogo() != null
+                        ? resourceMapper.toResponse(company.getLogo())
+                        : null)
                 .verified(company.isVerified())
                 .companyLocations(company.getCompanyLocations().stream().map(companyLocationMapper::toResponse)
                         .collect(Collectors.toSet()))

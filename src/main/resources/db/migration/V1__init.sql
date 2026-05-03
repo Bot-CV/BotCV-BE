@@ -160,6 +160,7 @@ CREATE TABLE moderators (
   account_id   BIGINT UNIQUE NOT NULL REFERENCES accounts(id),
   full_name    VARCHAR(150),
   phone        VARCHAR(20),
+  avatar_resource_id BIGINT UNIQUE REFERENCES resources(id),
   date_created TIMESTAMPTZ NOT NULL DEFAULT now(),
   date_updated TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -175,7 +176,7 @@ CREATE TABLE candidates (
   currency          VARCHAR(10),
   remote_pref       BOOLEAN,
   relocation_pref   BOOLEAN,
-  avatar_resource_id BIGINT REFERENCES resources(id),
+  avatar_resource_id BIGINT UNIQUE REFERENCES resources(id),
   bio               TEXT,
   date_created      TIMESTAMPTZ NOT NULL DEFAULT now(),
   date_updated      TIMESTAMPTZ NOT NULL DEFAULT now()
@@ -190,7 +191,7 @@ CREATE TABLE recruiters (
   account_id        BIGINT UNIQUE NOT NULL REFERENCES accounts(id),
   full_name         VARCHAR(150),
   phone             VARCHAR(20),
-  avatar_resource_id BIGINT REFERENCES resources(id),
+  avatar_resource_id BIGINT UNIQUE REFERENCES resources(id),
   company_id        BIGINT NOT NULL REFERENCES companies(id),
   date_created      TIMESTAMPTZ NOT NULL DEFAULT now(),
   date_updated      TIMESTAMPTZ NOT NULL DEFAULT now()
